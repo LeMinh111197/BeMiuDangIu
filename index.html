@@ -39,7 +39,7 @@
       border: none;
       color: white;
       padding: 10px 20px;
-      font-size: 14px;
+      font-size: 18px;
       border-radius: 30px;
       cursor: pointer;
       z-index: 100;
@@ -50,7 +50,7 @@
     }
 
     .btn-cat {
-      left: 150px;
+      left: 80px;
     }
 
     .btn-top-left:hover,
@@ -61,56 +61,47 @@
 </head>
 <body>
 
-  <!-- Nút thay ảnh nền -->
-  <button class="btn-top-left" onclick="thayAnhNen()">Thay ảnh nền</button>
+  <!-- Nút đổi nền -->
+  <button class="btn-top-left" onclick="thayAnhNen()">Đổi hình nền</button>
 
-  <!-- Nút con mèo đổi ảnh -->
-  <button class="btn-cat" onclick="doiAnhMiu()">Thay ảnh đại diện</button>
+  <!-- Nút đổi ảnh đại diện -->
+  <button class="btn-cat" onclick="doiAnhMiu()">Đổi ảnh đại diện</button>
 
   <div class="box">
-    <!-- Ảnh đại diện -->
-    <img class="avatar" id="avatar" src="2R0A4503.JPG" alt="Ảnh Bé Miu">
-    
+    <img class="avatar" id="avatar" src="1.jpg" alt="Ảnh Bé Miu">
     <h1>Gia đình bé Miu đáng iu</h1>
     <p>Chào mừng bạn đến với thế giới dễ thương của Miu!</p>
   </div>
 
-  <!-- Âm thanh -->
+  <!-- Âm thanh meow -->
   <audio id="meowSound" src="meow.mp3" preload="auto"></audio>
 
   <script>
-    let dangLaNen1 = true;
+    // Ảnh nền (1–6.jpg)
+    const backgrounds = ["1.jpg", "2.jpg", "3.jpg", "4.jpg", "5.jpg", "6.jpg"];
+    let nenIndex = 0;
+
     function thayAnhNen() {
-      if (dangLaNen1) {
-        document.body.style.backgroundImage = "url(1.JPG)";
-        document.body.style.backgroundSize = "cover";
-        document.body.style.backgroundRepeat = "no-repeat";
-        document.body.style.backgroundPosition = "center";
-      } else {
-        document.body.style.backgroundImage = "none";
-        document.body.style.backgroundColor = "#ffe6f0";
-      }
-      dangLaNen1 = !dangLaNen1;
+      document.body.style.backgroundImage = `url('${backgrounds[nenIndex]}')`;
+      document.body.style.backgroundSize = "cover";
+      document.body.style.backgroundRepeat = "no-repeat";
+      document.body.style.backgroundPosition = "center";
+      nenIndex = (nenIndex + 1) % backgrounds.length;
     }
 
-    let hienAnh = true;
-    let dangLaAnh1 = true;
+    // Ảnh đại diện (dùng lại 6 ảnh)
+    const avatars = ["1.jpg", "2.jpg", "3.jpg", "4.jpg", "5.jpg", "6.jpg"];
+    let avatarIndex = 0;
 
     function doiAnhMiu() {
       const avatar = document.getElementById('avatar');
       const sound = document.getElementById('meowSound');
 
-      // Phát âm thanh meow
+      avatarIndex = (avatarIndex + 1) % avatars.length;
+      avatar.src = avatars[avatarIndex];
+
       sound.currentTime = 0;
       sound.play();
-
-      // Đổi ảnh
-      if (dangLaAnh1) {
-        avatar.src = "2.JPG";
-      } else {
-        avatar.src = "3.JPG";
-      }
-      dangLaAnh1 = !dangLaAnh1;
     }
   </script>
 
