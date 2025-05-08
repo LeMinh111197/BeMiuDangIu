@@ -61,14 +61,14 @@
 </head>
 <body>
 
-  <!-- Nút đổi nền ❤️ -->
+  <!-- Nút đổi nền -->
   <button class="btn-top-left" onclick="thayAnhNen()">❤️</button>
 
-  <!-- Nút đổi ảnh mèo 🐱 -->
+  <!-- Nút đổi ảnh đại diện -->
   <button class="btn-cat" onclick="doiAnhMiu()">🐱</button>
 
   <div class="box">
-    <img class="avatar" id="avatar" src="2R0A5264.JPG" alt="Ảnh Bé Miu">
+    <img class="avatar" id="avatar" src="2R0A4503.JPG" alt="Ảnh Bé Miu">
     <h1>Gia đình bé Miu đáng iu</h1>
     <p>Chào mừng bạn đến với thế giới dễ thương của Miu!</p>
   </div>
@@ -77,12 +77,8 @@
   <audio id="meowSound" src="meow.mp3" preload="auto"></audio>
 
   <script>
-    // Danh sách ảnh nền
-    const backgrounds = [
-      "https://i.imgur.com/V7m7t1X.jpg",
-      "https://i.imgur.com/3Z2A9XR.jpg",
-      "https://i.imgur.com/n0kU4Uw.jpg"
-    ];
+    // Ảnh nền (1–6.JPG)
+    const backgrounds = ["1.JPG", "2.JPG", "3.JPG", "4.JPG", "5.JPG", "6.JPG"];
     let nenIndex = 0;
 
     function thayAnhNen() {
@@ -93,8 +89,8 @@
       nenIndex = (nenIndex + 1) % backgrounds.length;
     }
 
-    // Danh sách ảnh mèo đại diện
-    const avatars = ["2R0A5264.JPG", "2R0A4854.JPG", "cat3.jpg", "cat4.jpg"];
+    // Ảnh đại diện (bắt đầu từ 2R0A4503.JPG)
+    const avatars = ["2R0A4503.JPG", "1.JPG", "2.JPG", "3.JPG", "4.JPG", "5.JPG", "6.JPG"];
     let avatarIndex = 0;
 
     function doiAnhMiu() {
@@ -104,7 +100,6 @@
       avatarIndex = (avatarIndex + 1) % avatars.length;
       avatar.src = avatars[avatarIndex];
 
-      // Phát tiếng meow
       sound.currentTime = 0;
       sound.play();
     }
