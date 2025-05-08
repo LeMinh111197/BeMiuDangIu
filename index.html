@@ -6,19 +6,22 @@
   <style>
     body {
       font-family: Arial, sans-serif;
-      background-color: #ffe6f0; /* nền hồng nhẹ */
+      background-color: #ffe6f0;
       text-align: center;
       padding: 50px;
       transition: background-image 0.5s ease;
+      margin: 0;
     }
+
     .box {
-      background-color: rgba(255, 255, 255, 0.9); /* trắng trong suốt */
+      background-color: rgba(255, 255, 255, 0.9);
       padding: 20px;
       border-radius: 20px;
       box-shadow: 0 0 20px rgba(255, 105, 180, 0.2);
       max-width: 500px;
-      margin: auto;
+      margin: 80px auto 0 auto;
     }
+
     img.avatar {
       width: 150px;
       height: 150px;
@@ -26,48 +29,88 @@
       border-radius: 50%;
       margin-bottom: 20px;
       border: 3px solid #ff80ab;
+      transition: opacity 0.5s ease;
     }
-    button {
+
+    .btn-top-left, .btn-cat {
+      position: absolute;
+      top: 20px;
       background-color: #ff80ab;
       border: none;
       color: white;
       padding: 10px 20px;
-      font-size: 16px;
+      font-size: 14px;
       border-radius: 30px;
       cursor: pointer;
-      margin-top: 20px;
+      z-index: 100;
     }
-    button:hover {
+
+    .btn-top-left {
+      left: 20px;
+    }
+
+    .btn-cat {
+      left: 150px;
+    }
+
+    .btn-top-left:hover,
+    .btn-cat:hover {
       background-color: #ff4d94;
     }
   </style>
 </head>
 <body>
 
+  <!-- Nút thay ảnh nền -->
+  <button class="btn-top-left" onclick="thayAnhNen()">Thay ảnh nền</button>
+
+  <!-- Nút con mèo đổi ảnh -->
+  <button class="btn-cat" onclick="doiAnhMiu()">🐱</button>
+
   <div class="box">
     <!-- Ảnh đại diện -->
-    <img class="avatar" src="2R0A4503.JPG" alt="Ảnh Bé Miu">
+    <img class="avatar" id="avatar" src="2R0A5264.JPG" alt="Ảnh Bé Miu">
     
     <h1>Gia đình bé Miu đáng iu</h1>
     <p>Chào mừng bạn đến với thế giới dễ thương của Miu!</p>
-
-    <!-- Nút thay ảnh nền -->
-    <button onclick="thayAnhNen()">Thay ảnh nền</button>
   </div>
+
+  <!-- Âm thanh -->
+  <audio id="meowSound" src="meow.mp3" preload="auto"></audio>
 
   <script>
     let dangLaNen1 = true;
     function thayAnhNen() {
       if (dangLaNen1) {
-        document.body.style.backgroundImage = "url('2R0A5264.JPG')";
+        document.body.style.backgroundImage = "url('https://i.imgur.com/V7m7t1X.jpg')";
         document.body.style.backgroundSize = "cover";
         document.body.style.backgroundRepeat = "no-repeat";
         document.body.style.backgroundPosition = "center";
       } else {
         document.body.style.backgroundImage = "none";
-        document.body.style.backgroundColor = "#ffe6f0"; // nền hồng nhạt
+        document.body.style.backgroundColor = "#ffe6f0";
       }
       dangLaNen1 = !dangLaNen1;
+    }
+
+    let hienAnh = true;
+    let dangLaAnh1 = true;
+
+    function doiAnhMiu() {
+      const avatar = document.getElementById('avatar');
+      const sound = document.getElementById('meowSound');
+
+      // Phát âm thanh meow
+      sound.currentTime = 0;
+      sound.play();
+
+      // Đổi ảnh
+      if (dangLaAnh1) {
+        avatar.src = "2R0A4854.JPG";
+      } else {
+        avatar.src = "2R0A5264.JPG";
+      }
+      dangLaAnh1 = !dangLaAnh1;
     }
   </script>
 
