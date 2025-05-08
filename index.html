@@ -2,47 +2,74 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>Trang Web Riêng Đơn Giản</title>
+  <title>Gia đình bé Miu đáng iu</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      background-color: #f0f0f0;
+      background-color: #ffe6f0; /* nền hồng nhẹ */
       text-align: center;
       padding: 50px;
+      transition: background-image 0.5s ease;
     }
     .box {
-      background-color: white;
+      background-color: rgba(255, 255, 255, 0.9); /* trắng trong suốt */
       padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      border-radius: 20px;
+      box-shadow: 0 0 20px rgba(255, 105, 180, 0.2);
       max-width: 500px;
       margin: auto;
     }
-    img {
+    img.avatar {
       width: 150px;
       height: 150px;
       object-fit: cover;
       border-radius: 50%;
       margin-bottom: 20px;
+      border: 3px solid #ff80ab;
     }
-    a {
-      color: #007BFF;
-      text-decoration: none;
+    button {
+      background-color: #ff80ab;
+      border: none;
+      color: white;
+      padding: 10px 20px;
+      font-size: 16px;
+      border-radius: 30px;
+      cursor: pointer;
+      margin-top: 20px;
     }
-    a:hover {
-      text-decoration: underline;
+    button:hover {
+      background-color: #ff4d94;
     }
   </style>
 </head>
 <body>
 
   <div class="box">
-    <!-- Ảnh đại diện (đã sửa đuôi đúng .JPG) -->
-    <img src="2R0A4503.JPG" alt="Ảnh Bé Miu">
+    <!-- Ảnh đại diện -->
+    <img class="avatar" src="2R0A4503.JPG" alt="Ảnh Bé Miu">
     
-    <h1>Xin chào!</h1>
-    <p>Chào mừng bạn đến với trang web riêng của Gia đình bé Miu.</p>
+    <h1>Gia đình bé Miu đáng iu</h1>
+    <p>Chào mừng bạn đến với thế giới dễ thương của Miu!</p>
+
+    <!-- Nút thay ảnh nền -->
+    <button onclick="thayAnhNen()">Thay ảnh nền</button>
   </div>
+
+  <script>
+    let dangLaNen1 = true;
+    function thayAnhNen() {
+      if (dangLaNen1) {
+        document.body.style.backgroundImage = "url('2R0A5264.JPG')";
+        document.body.style.backgroundSize = "cover";
+        document.body.style.backgroundRepeat = "no-repeat";
+        document.body.style.backgroundPosition = "center";
+      } else {
+        document.body.style.backgroundImage = "none";
+        document.body.style.backgroundColor = "#ffe6f0"; // nền hồng nhạt
+      }
+      dangLaNen1 = !dangLaNen1;
+    }
+  </script>
 
 </body>
 </html>
