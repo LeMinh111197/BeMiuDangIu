@@ -103,8 +103,8 @@
     .text-container {
       flex: 2;
       text-align: left;
-      padding-left: 40px;
-      margin-top: 80px; /* Thêm dòng này để đẩy văn bản xuống */
+      padding-left: 10px; /* Gần avatar hơn */
+      margin-top: 80px;   /* Xuống dưới ảnh nền */
     }
 
     h1 {
@@ -174,6 +174,7 @@
 </head>
 <body>
 
+  <!-- Ảnh nền -->
   <div class="background-image" id="bgContainer">
     <img id="bgImage" src="4.JPG" alt="Ảnh nền">
     <div class="controls">
@@ -184,6 +185,7 @@
     <button class="thumbnail-toggle" onclick="toggleThumbnails()">📷</button>
   </div>
 
+  <!-- Nội dung -->
   <div class="container">
     <div class="avatar-container">
       <img id="avatar" class="avatar" src="9.JPG" alt="Ảnh Miu" onclick="doiAnhMiu()">
@@ -194,6 +196,7 @@
     </div>
   </div>
 
+  <!-- Danh sách ảnh nền -->
   <div class="thumbnails" id="thumbnailList">
     <img src="1.JPG" onclick="changeBackground(this)">
     <img src="2.JPG" onclick="changeBackground(this)">
@@ -202,6 +205,7 @@
     <img src="5.JPG" onclick="changeBackground(this)">
   </div>
 
+  <!-- Âm thanh mèo -->
   <audio id="meowSound" src="meow.mp3" preload="auto"></audio>
 
   <script>
