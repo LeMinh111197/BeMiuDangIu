@@ -8,7 +8,7 @@
 
     body {
       margin: 0;
-      font-family: Arial, sans-serif;
+      font-family: 'Segoe UI', sans-serif;
       color: #fff;
       background-image: url('galaxy.jpg');
       background-size: cover;
@@ -25,7 +25,7 @@
       width: 100%;
       height: 400px;
       overflow: hidden;
-      border-bottom: 3px solid #ffccff;
+      border-bottom: 4px solid #ffc1e3;
     }
 
     .background-image {
@@ -43,6 +43,7 @@
       user-select: none;
       transform-origin: top left;
       cursor: grab;
+      border-radius: 16px;
     }
 
     .controls {
@@ -62,16 +63,18 @@
       font-weight: bold;
       border: none;
       border-radius: 50%;
-      background-color: #ff4081;
+      background-color: #ffb6c1;
       color: white;
       cursor: pointer;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-      transition: background 0.2s, transform 0.2s;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+      opacity: 0.5;
+      transition: all 0.3s ease;
     }
 
     .controls button:hover {
-      background-color: #f50057;
+      background-color: #ff80ab;
       transform: scale(1.1);
+      opacity: 1;
     }
 
     .container {
@@ -93,10 +96,11 @@
       height: 200px;
       object-fit: cover;
       border-radius: 50%;
-      border: 5px solid #ff80ab;
+      border: 6px solid #ffcce0;
       cursor: pointer;
       background-color: #fff;
       transition: opacity 0.4s ease, transform 0.3s ease;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     }
 
     img.avatar:hover {
@@ -112,47 +116,15 @@
 
     h1 {
       color: #ffccff;
-      font-size: 32px;
+      font-size: 34px;
       margin: 0;
+      font-weight: 600;
     }
 
     p {
       font-size: 20px;
-      color: #eeeeee;
+      color: #fefefe;
       margin: 10px 0 0 0;
-    }
-
-    .toast {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      background: rgba(255, 105, 180, 0.9);
-      color: white;
-      padding: 10px 18px;
-      border-radius: 8px;
-      font-size: 16px;
-      opacity: 0;
-      transition: opacity 0.5s;
-      z-index: 999;
-    }
-
-    .toast.show {
-      opacity: 1;
-    }
-
-    .clear-button {
-      margin-top: 8px;
-      font-size: 12px;
-      background: #ff80ab;
-      border: none;
-      padding: 4px 6px;
-      border-radius: 6px;
-      color: white;
-      cursor: pointer;
-    }
-
-    .clear-button:hover {
-      background-color: #ff4f87;
     }
   </style>
 </head>
@@ -167,7 +139,6 @@
       <button onclick="zoomIn()">+</button>
       <button onclick="zoomOut()">−</button>
       <button onclick="resetTransform()">⟳</button>
-      <button class="clear-button" onclick="clearStorage()">Xóa</button>
     </div>
   </div>
 
@@ -180,8 +151,6 @@
       <p>Chào mừng bạn đến với thế giới dễ thương của bé Miu!</p>
     </div>
   </div>
-
-  <div class="toast" id="toast">Đã lưu vị trí ảnh</div>
 
   <audio id="meowSound" src="meow.mp3" preload="auto"></audio>
 
@@ -211,7 +180,7 @@
 
     function updateTransform() {
       bgImage.style.transform = `translate(${currentX}px, ${currentY}px) scale(${scale})`;
-      autoSave();
+      localStorage.setItem('bgPosition', JSON.stringify({ x: currentX, y: currentY, scale }));
     }
 
     function zoomIn() {
@@ -231,17 +200,6 @@
       updateTransform();
     }
 
-    function autoSave() {
-      const positionData = { x: currentX, y: currentY, scale: scale };
-      localStorage.setItem('bgPosition', JSON.stringify(positionData));
-      showToast("Đã lưu vị trí ảnh");
-    }
-
-    function clearStorage() {
-      localStorage.removeItem('bgPosition');
-      showToast("Đã xóa bộ nhớ đã lưu");
-    }
-
     function loadSavedPosition() {
       const saved = localStorage.getItem('bgPosition');
       if (saved) {
@@ -255,15 +213,6 @@
           console.error("Lỗi khi tải vị trí:", e);
         }
       }
-    }
-
-    function showToast(message) {
-      const toast = document.getElementById('toast');
-      toast.innerText = message;
-      toast.classList.add('show');
-      setTimeout(() => {
-        toast.classList.remove('show');
-      }, 2000);
     }
 
     bgContainer.addEventListener('mousedown', function(e) {
@@ -293,6 +242,7 @@
       updateTransform();
     });
 
+    // Touch support
     bgContainer.addEventListener('touchstart', function(e) {
       isDragging = true;
       startX = e.touches[0].clientX - currentX;
