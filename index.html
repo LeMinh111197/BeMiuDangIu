@@ -6,19 +6,14 @@
   <style>
     body {
       margin: 0;
+      padding: 40px;
       font-family: Arial, sans-serif;
-      background-color: #fff0f5;
       color: #fff;
-    }
 
-    .cover {
-      position: relative;
-      width: 100%;
-      height: 300px;
-      overflow: hidden;
-      background-image: url('galaxy.jpg');
+      /* Nền galaxy động */
+      background-image: url('galaxy.jpg'); /* Thay bằng ảnh galaxy tải lên */
       background-size: cover;
-      background-position: center;
+      background-repeat: repeat;
       animation: moveGalaxy 60s linear infinite;
     }
 
@@ -27,38 +22,53 @@
       100% { background-position: -2000px 0; }
     }
 
-    .avatar {
-      position: absolute;
-      bottom: -60px;
-      left: 40px;
-      width: 120px;
-      height: 120px;
-      border-radius: 50%;
-      border: 4px solid white;
-      object-fit: cover;
-      cursor: pointer;
-      z-index: 2;
+    .container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
     }
 
-    .content {
-      padding: 80px 20px 40px 20px;
-      text-align: center;
+    .avatar-container {
+      flex: 1;
+      display: flex;
+      justify-content: flex-start;
+    }
+
+    img.avatar {
+      width: 200px;
+      height: 200px;
+      object-fit: cover;
+      border-radius: 50%;
+      border: 5px solid #ff80ab;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+
+    img.avatar:hover {
+      transform: scale(1.05);
+    }
+
+    .text-container {
+      flex: 2;
+      text-align: left;
+      padding-left: 40px;
     }
 
     h1 {
-      font-size: 30px;
-      color: #d63384;
+      color: #ffccff;
+      font-size: 32px;
     }
 
     p {
-      color: #333;
-      font-size: 18px;
+      font-size: 20px;
+      color: #eeeeee;
     }
 
     .background-image {
       width: 100%;
       height: 240px;
-      margin-top: 30px;
+      margin-top: 40px;
       overflow: hidden;
       position: relative;
       cursor: grab;
@@ -83,31 +93,28 @@
 </head>
 <body>
 
-  <!-- Ảnh bìa -->
-  <div class="cover" onclick="doiAnhNen()" id="coverContainer">
-    <img id="avatar" class="avatar" src="1.JPG" alt="Avatar" onclick="doiAnhMiu(event)">
+  <div class="container">
+    <div class="avatar-container">
+      <img id="avatar" class="avatar" src="1.JPG" alt="Ảnh Miu" onclick="doiAnhMiu()">
+    </div>
+
+    <div class="text-container">
+      <h1>Gia đình bé Miu đáng iu</h1>
+      <p>Chào mừng bạn đến với thế giới dễ thương của bé Miu!</p>
+    </div>
   </div>
 
-  <!-- Nội dung chính -->
-  <div class="content">
-    <h1>Gia đình bé Miu đáng iu</h1>
-    <p>Chào mừng bạn đến với thế giới dễ thương của bé Miu!</p>
-  </div>
-
-  <!-- Ảnh nền phía dưới để kéo (giữ lại nếu muốn) -->
   <div class="background-image" onclick="doiAnhNen()" id="bgContainer">
     <img id="bgImage" src="1.JPG" alt="Ảnh nền">
   </div>
 
-  <!-- Âm thanh -->
   <audio id="meowSound" src="meow.mp3" preload="auto"></audio>
 
   <script>
     const avatars = ["1.JPG", "2.JPG", "3.JPG", "4.JPG", "5.JPG", "6.JPG", "7.JPG", "8.JPG", "9.JPG"];
     let avatarIndex = 0;
 
-    function doiAnhMiu(event) {
-      event.stopPropagation(); // Không cho ảnh bìa click chung
+    function doiAnhMiu() {
       const avatar = document.getElementById('avatar');
       const sound = document.getElementById('meowSound');
 
@@ -118,6 +125,7 @@
     }
 
     let bgIndex = 0;
+
     function doiAnhNen() {
       const bgImage = document.getElementById('bgImage');
       bgIndex = (bgIndex + 1) % avatars.length;
