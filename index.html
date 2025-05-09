@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <title>Bé Miu đáng iu</title>
   <style>
-    * { box-sizing: border-box; }
-
+     * { box-sizing: border-box; }
+    
     body {
       margin: 0;
       font-family: 'Arial', sans-serif;
@@ -259,8 +259,11 @@
     function checkPassword() {
       const input = document.getElementById('passwordInput').value;
       if (input === correctPassword) {
+        localStorage.setItem('isLoggedIn', 'true');
         document.getElementById('passwordOverlay').style.display = 'none';
         document.getElementById('logoutBtn').style.display = 'block';
+        saveBackgroundState();
+        saveAvatarState();
       } else {
         alert('Sai mật khẩu!');
       }
@@ -268,7 +271,9 @@
 
     function logout() {
       if (confirm('Bạn có chắc muốn đăng xuất không?')) {
-        localStorage.clear();
+        localStorage.removeItem('isLoggedIn');
+        localStorage.removeItem('bgState');
+        localStorage.removeItem('selectedAvatar');
         location.reload();
       }
     }
@@ -286,10 +291,16 @@
     let isDragging = false;
     let startX;
 
-    const savedAvatar = localStorage.getItem('selectedAvatar');
-    if (savedAvatar && avatars.includes(savedAvatar)) {
-      avatar.src = savedAvatar;
-      avatarIndex = avatars.indexOf(savedAvatar);
+    function saveAvatarState() {
+      localStorage.setItem('selectedAvatar', avatar.src);
+    }
+
+    function loadAvatarState() {
+      const savedAvatar = localStorage.getItem('selectedAvatar');
+      if (savedAvatar && avatars.includes(savedAvatar.split('/').pop())) {
+        avatar.src = savedAvatar;
+        avatarIndex = avatars.indexOf(savedAvatar.split('/').pop());
+      }
     }
 
     function doiAnhMiu() {
@@ -298,7 +309,7 @@
         avatarIndex = (avatarIndex + 1) % avatars.length;
         const newAvatar = avatars[avatarIndex];
         avatar.src = newAvatar;
-        localStorage.setItem('selectedAvatar', newAvatar);
+        saveAvatarState();
         avatar.style.opacity = 1;
         sound.currentTime = 0;
         sound.play();
@@ -364,18 +375,27 @@
     }
 
     window.addEventListener('load', () => {
-      const saved = JSON.parse(localStorage.getItem('bgState'));
-      if (saved) {
-        currentX = parseInt(saved.left) || 0;
-        scale = saved.scale || 1;
-        bgImage.src = saved.src || '4.JPG';
-        bgImage.style.left = currentX + 'px';
-        updateZoom();
+      if (localStorage.getItem('isLoggedIn') === 'true') {
+        document.getElementById('passwordOverlay').style.display = 'none';
+        document.getElementById('logoutBtn').style.display = 'block';
 
-        const thumbs = document.querySelectorAll('.thumbnails img');
-        thumbs.forEach(t => {
-          if (t.src === bgImage.src) t.classList.add('selected');
-        });
+        const saved = JSON.parse(localStorage.getItem('bgState'));
+        if (saved) {
+          currentX = parseInt(saved.left) || 0;
+          scale = saved.scale || 1;
+          bgImage.src = saved.src || '4.JPG';
+          bgImage.style.left = currentX + 'px';
+          updateZoom();
+
+          const thumbs = document.querySelectorAll('.thumbnails img');
+          thumbs.forEach(t => {
+            if (t.src.split('/').pop() === bgImage.src.split('/').pop()) {
+              t.classList.add('selected');
+            }
+          });
+        }
+
+        loadAvatarState();
       }
     });
 
