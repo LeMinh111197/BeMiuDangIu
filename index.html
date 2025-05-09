@@ -298,8 +298,8 @@
 
     function logout() {
       if (confirm('Bạn có chắc muốn đăng xuất không?')) {
-        localStorage.clear();
-        location.reload();
+    document.getElementById('passwordOverlay').style.display = 'flex';
+    document.getElementById('logoutBtn').style.display = 'none';
       }
     }
 
