@@ -64,10 +64,13 @@
       border-radius: 50%;
       border: 5px solid #ff80ab;
       cursor: pointer;
+      transition: transform 0.3s ease;
       background-color: #fff;
       z-index: 2;
-      opacity: 1;
-      transition: opacity 0.4s ease;
+    }
+
+    img.avatar:hover {
+      transform: scale(1.05);
     }
 
     .text-container {
@@ -93,7 +96,7 @@
 
   <!-- Ảnh nền cố định -->
   <div class="background-image">
-    <img src="4.JPG" alt="Ảnh nền">
+    <img src="3.JPG" alt="Ảnh nền">
   </div>
 
   <!-- Phần nội dung đè lên ảnh nền -->
@@ -118,19 +121,10 @@
       const avatar = document.getElementById('avatar');
       const sound = document.getElementById('meowSound');
 
-      // Bắt đầu hiệu ứng mờ dần
-      avatar.style.opacity = 0;
-
-      setTimeout(() => {
-        avatarIndex = (avatarIndex + 1) % avatars.length;
-        avatar.src = avatars[avatarIndex];
-
-        // Sau khi thay ảnh, hiện dần trở lại
-        avatar.style.opacity = 1;
-
-        sound.currentTime = 0;
-        sound.play();
-      }, 400); // chờ 400ms để đổi ảnh
+      avatarIndex = (avatarIndex + 1) % avatars.length;
+      avatar.src = avatars[avatarIndex];
+      sound.currentTime = 0;
+      sound.play();
     }
   </script>
 
