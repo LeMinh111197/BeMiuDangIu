@@ -40,7 +40,6 @@
       user-drag: none;
       user-select: none;
       transition: transform 0.2s ease;
-      pointer-events: none;
     }
 
     .controls {
@@ -50,7 +49,7 @@
       display: flex;
       gap: 10px;
       opacity: 0.5;
-      z-index: 3;
+      z-index: 2;
     }
 
     .controls button {
@@ -72,9 +71,10 @@
     .container {
       position: relative;
       display: flex;
-      align-items: flex-start;
-      justify-content: flex-start;
-      margin-top: 60px;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: -100px;
       z-index: 2;
     }
 
@@ -103,7 +103,8 @@
     .text-container {
       flex: 2;
       text-align: left;
-      padding-left: 20px;
+      padding-left: 10px; /* Gần avatar hơn */
+      margin-top: 80px;   /* Xuống dưới ảnh nền */
     }
 
     h1 {
@@ -117,6 +118,58 @@
       color: #eeeeee;
       margin: 10px 0 0 0;
     }
+
+    .thumbnails {
+      display: none;
+      justify-content: center;
+      flex-wrap: wrap;
+      padding: 10px;
+      background: rgba(255, 255, 255, 0.05);
+      border-top: 2px solid #ffccff;
+      margin-top: 20px;
+      transition: all 0.3s ease;
+    }
+
+    .thumbnails img {
+      width: 100px;
+      height: 60px;
+      object-fit: cover;
+      margin: 5px;
+      border-radius: 8px;
+      border: 2px solid transparent;
+      cursor: pointer;
+      transition: transform 0.2s, border-color 0.2s;
+    }
+
+    .thumbnails img:hover {
+      transform: scale(1.05);
+      border-color: #ff80ab;
+    }
+
+    .thumbnails img.selected {
+      border-color: #ffccff;
+    }
+
+    .thumbnail-toggle {
+      position: absolute;
+      bottom: 10px;
+      right: 20px;
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      color: #fff;
+      font-size: 18px;
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      cursor: pointer;
+      opacity: 0.6;
+      backdrop-filter: blur(5px);
+      z-index: 2;
+    }
+
+    .thumbnail-toggle:hover {
+      opacity: 1;
+    }
   </style>
 </head>
 <body>
@@ -129,6 +182,7 @@
       <button onclick="zoomOut()">−</button>
       <button onclick="resetImage()">⟲</button>
     </div>
+    <button class="thumbnail-toggle" onclick="toggleThumbnails()">📷</button>
   </div>
 
   <!-- Nội dung -->
@@ -142,7 +196,16 @@
     </div>
   </div>
 
-  <!-- Âm thanh -->
+  <!-- Danh sách ảnh nền -->
+  <div class="thumbnails" id="thumbnailList">
+    <img src="1.JPG" onclick="changeBackground(this)">
+    <img src="2.JPG" onclick="changeBackground(this)">
+    <img src="3.JPG" onclick="changeBackground(this)">
+    <img src="4.JPG" onclick="changeBackground(this)">
+    <img src="5.JPG" onclick="changeBackground(this)">
+  </div>
+
+  <!-- Âm thanh mèo -->
   <audio id="meowSound" src="meow.mp3" preload="auto"></audio>
 
   <script>
@@ -150,6 +213,7 @@
     const avatar = document.getElementById('avatar');
     const sound = document.getElementById('meowSound');
     const bgImage = document.getElementById('bgImage');
+    const thumbnailList = document.getElementById('thumbnailList');
 
     let avatarIndex = 0;
     let currentX = 0;
@@ -215,6 +279,20 @@
       saveBackgroundState();
     }
 
+    function changeBackground(imgElement) {
+      const thumbs = document.querySelectorAll('.thumbnails img');
+      thumbs.forEach(t => t.classList.remove('selected'));
+      imgElement.classList.add('selected');
+
+      bgImage.src = imgElement.src;
+      saveBackgroundState();
+      thumbnailList.style.display = 'none';
+    }
+
+    function toggleThumbnails() {
+      thumbnailList.style.display = thumbnailList.style.display === 'flex' ? 'none' : 'flex';
+    }
+
     function saveBackgroundState() {
       const state = {
         left: bgImage.style.left,
@@ -232,6 +310,11 @@
         bgImage.src = saved.src || '4.JPG';
         bgImage.style.left = currentX + 'px';
         updateZoom();
+
+        const thumbs = document.querySelectorAll('.thumbnails img');
+        thumbs.forEach(t => {
+          if (t.src === bgImage.src) t.classList.add('selected');
+        });
       }
     });
 
