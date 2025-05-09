@@ -104,6 +104,7 @@
       flex: 2;
       text-align: left;
       padding-left: 40px;
+      margin-top: 80px; /* Thêm dòng này để đẩy văn bản xuống */
     }
 
     h1 {
@@ -173,7 +174,6 @@
 </head>
 <body>
 
-  <!-- Ảnh nền cố định -->
   <div class="background-image" id="bgContainer">
     <img id="bgImage" src="4.JPG" alt="Ảnh nền">
     <div class="controls">
@@ -184,7 +184,6 @@
     <button class="thumbnail-toggle" onclick="toggleThumbnails()">📷</button>
   </div>
 
-  <!-- Nội dung -->
   <div class="container">
     <div class="avatar-container">
       <img id="avatar" class="avatar" src="9.JPG" alt="Ảnh Miu" onclick="doiAnhMiu()">
@@ -195,7 +194,6 @@
     </div>
   </div>
 
-  <!-- Danh sách ảnh nền -->
   <div class="thumbnails" id="thumbnailList">
     <img src="1.JPG" onclick="changeBackground(this)">
     <img src="2.JPG" onclick="changeBackground(this)">
@@ -204,7 +202,6 @@
     <img src="5.JPG" onclick="changeBackground(this)">
   </div>
 
-  <!-- Âm thanh mèo -->
   <audio id="meowSound" src="meow.mp3" preload="auto"></audio>
 
   <script>
@@ -220,7 +217,6 @@
     let isDragging = false;
     let startX;
 
-    // Load avatar đã lưu
     const savedAvatar = localStorage.getItem('selectedAvatar');
     if (savedAvatar && avatars.includes(savedAvatar)) {
       avatar.src = savedAvatar;
@@ -240,7 +236,6 @@
       }, 400);
     }
 
-    // Zoom và kéo ảnh nền
     const bgContainer = document.getElementById('bgContainer');
 
     bgContainer.addEventListener('mousedown', e => {
@@ -287,8 +282,6 @@
 
       bgImage.src = imgElement.src;
       saveBackgroundState();
-
-      // Ẩn thumbnails sau khi chọn
       thumbnailList.style.display = 'none';
     }
 
@@ -305,7 +298,6 @@
       localStorage.setItem('bgState', JSON.stringify(state));
     }
 
-    // Load trạng thái đã lưu
     window.addEventListener('load', () => {
       const saved = JSON.parse(localStorage.getItem('bgState'));
       if (saved) {
@@ -322,7 +314,6 @@
       }
     });
 
-    // Hỗ trợ cảm ứng
     bgContainer.addEventListener('touchstart', e => {
       isDragging = true;
       startX = e.touches[0].clientX - currentX;
