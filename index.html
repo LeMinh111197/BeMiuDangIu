@@ -2,11 +2,9 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>Gia đình bé Miu đáng iu</title>
+  <title>Bé Miu đáng iu</title>
   <style>
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
@@ -14,7 +12,6 @@
       color: #fff;
       background-image: url('galaxy.jpg');
       background-size: cover;
-      background-repeat: repeat;
       animation: moveGalaxy 60s linear infinite;
     }
 
@@ -23,12 +20,19 @@
       100% { background-position: -2000px 0; }
     }
 
-    .background-image {
+    .background-wrapper {
+      position: relative;
       width: 100%;
       height: 400px;
       overflow: hidden;
-      position: relative;
       border-bottom: 3px solid #ffccff;
+    }
+
+    .background-image {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      position: relative;
       cursor: grab;
     }
 
@@ -36,10 +40,34 @@
       position: absolute;
       top: 0;
       left: 0;
-      user-drag: none;
       user-select: none;
       transform-origin: top left;
       cursor: grab;
+    }
+
+    .controls {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      z-index: 3;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .controls button {
+      padding: 8px 12px;
+      font-size: 14px;
+      border: none;
+      border-radius: 5px;
+      background-color: #ff80ab;
+      color: white;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .controls button:hover {
+      background-color: #ff4f87;
     }
 
     .container {
@@ -93,18 +121,28 @@
 </head>
 <body>
 
-  <!-- Ảnh nền có thể kéo và zoom -->
-  <div class="background-image" id="bgContainer">
-    <img id="bgImage" src="4.JPG" alt="Ảnh nền">
+  <!-- Ảnh nền có thể di chuyển và zoom -->
+  <div class="background-wrapper">
+    <div class="background-image" id="bgContainer">
+      <img id="bgImage" src="4.JPG" alt="Ảnh nền">
+    </div>
+
+    <!-- Nút điều khiển bên phải -->
+    <div class="controls">
+      <button onclick="zoomIn()">Phóng to</button>
+      <button onclick="zoomOut()">Thu nhỏ</button>
+      <button onclick="resetTransform()">Đặt lại</button>
+      <button onclick="savePosition()">💾 Lưu vị trí</button>
+    </div>
   </div>
 
-  <!-- Phần nội dung -->
+  <!-- Nội dung -->
   <div class="container">
     <div class="avatar-container">
       <img id="avatar" class="avatar" src="9.JPG" alt="Ảnh Miu" onclick="doiAnhMiu()">
     </div>
     <div class="text-container">
-      <h1>Gia đình bé Miu đáng iu</h1>
+      <h1>Bé Miu đáng iu</h1>
       <p>Chào mừng bạn đến với thế giới dễ thương của bé Miu!</p>
     </div>
   </div>
@@ -112,6 +150,7 @@
   <audio id="meowSound" src="meow.mp3" preload="auto"></audio>
 
   <script>
+    // Avatar logic
     const avatars = ["1.JPG", "2.JPG", "3.JPG", "4.JPG", "5.JPG", "6.JPG", "7.JPG", "8.JPG", "9.JPG"];
     let avatarIndex = 0;
 
@@ -129,14 +168,62 @@
       }, 400);
     }
 
+    // Zoom & move logic
     const bgImage = document.getElementById('bgImage');
     const bgContainer = document.getElementById('bgContainer');
     let isDragging = false;
-    let startX, startY;
+    let startX = 0, startY = 0;
     let currentX = 0, currentY = 0;
     let scale = 1;
 
-    // Kéo ảnh nền
+    function updateTransform() {
+      bgImage.style.transform = `translate(${currentX}px, ${currentY}px) scale(${scale})`;
+    }
+
+    function zoomIn() {
+      scale += 0.1;
+      updateTransform();
+    }
+
+    function zoomOut() {
+      scale -= 0.1;
+      if (scale < 0.3) scale = 0.3;
+      updateTransform();
+    }
+
+    function resetTransform() {
+      scale = 1;
+      currentX = 0;
+      currentY = 0;
+      updateTransform();
+    }
+
+    function savePosition() {
+      const positionData = {
+        x: currentX,
+        y: currentY,
+        scale: scale
+      };
+      localStorage.setItem('bgPosition', JSON.stringify(positionData));
+      alert("Đã lưu vị trí ảnh nền!");
+    }
+
+    function loadSavedPosition() {
+      const saved = localStorage.getItem('bgPosition');
+      if (saved) {
+        try {
+          const { x, y, scale: savedScale } = JSON.parse(saved);
+          currentX = x;
+          currentY = y;
+          scale = savedScale;
+          updateTransform();
+        } catch (e) {
+          console.error("Lỗi khi tải vị trí:", e);
+        }
+      }
+    }
+
+    // Kéo chuột
     bgContainer.addEventListener('mousedown', function(e) {
       isDragging = true;
       startX = e.clientX - currentX;
@@ -144,11 +231,7 @@
       bgImage.style.cursor = 'grabbing';
     });
 
-    document.addEventListener('mouseup', function() {
-      isDragging = false;
-      bgImage.style.cursor = 'grab';
-    });
-
+    document.addEventListener('mouseup', () => isDragging = false);
     document.addEventListener('mousemove', function(e) {
       if (!isDragging) return;
       currentX = e.clientX - startX;
@@ -156,30 +239,23 @@
       updateTransform();
     });
 
-    // Zoom bằng cuộn chuột
+    // Cuộn để zoom
     bgContainer.addEventListener('wheel', function(e) {
       e.preventDefault();
       const zoomAmount = 0.05;
-      if (e.deltaY < 0) {
-        scale += zoomAmount;
-      } else {
-        scale -= zoomAmount;
-        if (scale < 0.3) scale = 0.3;
-      }
+      if (e.deltaY < 0) scale += zoomAmount;
+      else scale = Math.max(0.3, scale - zoomAmount);
       updateTransform();
     });
 
-    // Cho cảm ứng
+    // Kéo cảm ứng
     bgContainer.addEventListener('touchstart', function(e) {
       isDragging = true;
       startX = e.touches[0].clientX - currentX;
       startY = e.touches[0].clientY - currentY;
     });
 
-    document.addEventListener('touchend', function() {
-      isDragging = false;
-    });
-
+    document.addEventListener('touchend', () => isDragging = false);
     document.addEventListener('touchmove', function(e) {
       if (!isDragging) return;
       currentX = e.touches[0].clientX - startX;
@@ -187,9 +263,8 @@
       updateTransform();
     });
 
-    function updateTransform() {
-      bgImage.style.transform = `translate(${currentX}px, ${currentY}px) scale(${scale})`;
-    }
+    // Tải lại vị trí khi mở trang
+    window.onload = loadSavedPosition;
   </script>
 
 </body>
