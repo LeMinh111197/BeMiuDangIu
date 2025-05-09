@@ -68,21 +68,38 @@
       background: rgba(255, 255, 255, 0.3);
     }
 
-    .container {
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-wrap: wrap;
-      margin-top: -100px;
+    .thumbnail-toggle {
+      position: absolute;
+      bottom: 10px;
+      right: 20px;
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      color: #fff;
+      font-size: 18px;
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      cursor: pointer;
+      opacity: 0.6;
+      backdrop-filter: blur(5px);
       z-index: 2;
     }
 
-    .avatar-container {
-      flex: 1;
+    .thumbnail-toggle:hover {
+      opacity: 1;
+    }
+
+    .info-below {
       display: flex;
+      align-items: center;
       justify-content: flex-start;
-      padding-left: 40px;
+      padding: 30px 40px;
+      gap: 30px;
+    }
+
+    .avatar-container {
+      width: 200px;
+      flex-shrink: 0;
     }
 
     img.avatar {
@@ -100,22 +117,20 @@
       transform: scale(1.05);
     }
 
-    .text-container {
-      flex: 2;
-      text-align: left;
-      padding-left: 40px;
+    .text-info {
+      flex: 1;
     }
 
-    h1 {
-      color: #ffccff;
+    .text-info h1 {
       font-size: 32px;
       margin: 0;
+      color: #ffccff;
     }
 
-    p {
+    .text-info p {
       font-size: 20px;
       color: #eeeeee;
-      margin: 10px 0 0 0;
+      margin-top: 10px;
     }
 
     .thumbnails {
@@ -148,32 +163,11 @@
     .thumbnails img.selected {
       border-color: #ffccff;
     }
-
-    .thumbnail-toggle {
-      position: absolute;
-      bottom: 10px;
-      right: 20px;
-      background: rgba(255, 255, 255, 0.2);
-      border: none;
-      color: #fff;
-      font-size: 18px;
-      border-radius: 50%;
-      width: 36px;
-      height: 36px;
-      cursor: pointer;
-      opacity: 0.6;
-      backdrop-filter: blur(5px);
-      z-index: 2;
-    }
-
-    .thumbnail-toggle:hover {
-      opacity: 1;
-    }
   </style>
 </head>
 <body>
 
-  <!-- Ảnh nền cố định -->
+  <!-- Ảnh nền -->
   <div class="background-image" id="bgContainer">
     <img id="bgImage" src="4.JPG" alt="Ảnh nền">
     <div class="controls">
@@ -184,18 +178,18 @@
     <button class="thumbnail-toggle" onclick="toggleThumbnails()">📷</button>
   </div>
 
-  <!-- Nội dung -->
-  <div class="container">
+  <!-- Phần thông tin bên dưới ảnh nền -->
+  <div class="info-below">
     <div class="avatar-container">
       <img id="avatar" class="avatar" src="9.JPG" alt="Ảnh Miu" onclick="doiAnhMiu()">
     </div>
-    <div class="text-container">
+    <div class="text-info">
       <h1>Bé Miu đáng iu</h1>
       <p>Chào mừng bạn đến với thế giới dễ thương của bé Miu!</p>
     </div>
   </div>
 
-  <!-- Danh sách ảnh nền -->
+  <!-- Thumbnails ảnh nền -->
   <div class="thumbnails" id="thumbnailList">
     <img src="1.JPG" onclick="changeBackground(this)">
     <img src="2.JPG" onclick="changeBackground(this)">
@@ -204,7 +198,7 @@
     <img src="5.JPG" onclick="changeBackground(this)">
   </div>
 
-  <!-- Âm thanh mèo -->
+  <!-- Âm thanh meo -->
   <audio id="meowSound" src="meow.mp3" preload="auto"></audio>
 
   <script>
@@ -220,7 +214,6 @@
     let isDragging = false;
     let startX;
 
-    // Load avatar đã lưu
     const savedAvatar = localStorage.getItem('selectedAvatar');
     if (savedAvatar && avatars.includes(savedAvatar)) {
       avatar.src = savedAvatar;
@@ -240,7 +233,6 @@
       }, 400);
     }
 
-    // Zoom và kéo ảnh nền
     const bgContainer = document.getElementById('bgContainer');
 
     bgContainer.addEventListener('mousedown', e => {
@@ -287,8 +279,6 @@
 
       bgImage.src = imgElement.src;
       saveBackgroundState();
-
-      // Ẩn thumbnails sau khi chọn
       thumbnailList.style.display = 'none';
     }
 
@@ -305,7 +295,6 @@
       localStorage.setItem('bgState', JSON.stringify(state));
     }
 
-    // Load trạng thái đã lưu
     window.addEventListener('load', () => {
       const saved = JSON.parse(localStorage.getItem('bgState'));
       if (saved) {
@@ -322,7 +311,6 @@
       }
     });
 
-    // Hỗ trợ cảm ứng
     bgContainer.addEventListener('touchstart', e => {
       isDragging = true;
       startX = e.touches[0].clientX - currentX;
@@ -337,6 +325,5 @@
       saveBackgroundState();
     });
   </script>
-
 </body>
 </html>
