@@ -40,6 +40,7 @@
       user-drag: none;
       user-select: none;
       transition: transform 0.2s ease;
+      cursor: pointer;
     }
 
     .controls {
@@ -103,8 +104,8 @@
     .text-container {
       flex: 2;
       text-align: left;
-      padding-left: 10px; /* Gần avatar hơn */
-      margin-top: 80px;   /* Xuống dưới ảnh nền */
+      padding-left: 30px;
+      margin-top: 80px;
     }
 
     h1 {
@@ -149,27 +150,6 @@
     .thumbnails img.selected {
       border-color: #ffccff;
     }
-
-    .thumbnail-toggle {
-      position: absolute;
-      bottom: 10px;
-      right: 20px;
-      background: rgba(255, 255, 255, 0.2);
-      border: none;
-      color: #fff;
-      font-size: 18px;
-      border-radius: 50%;
-      width: 36px;
-      height: 36px;
-      cursor: pointer;
-      opacity: 0.6;
-      backdrop-filter: blur(5px);
-      z-index: 2;
-    }
-
-    .thumbnail-toggle:hover {
-      opacity: 1;
-    }
   </style>
 </head>
 <body>
@@ -182,7 +162,6 @@
       <button onclick="zoomOut()">−</button>
       <button onclick="resetImage()">⟲</button>
     </div>
-    <button class="thumbnail-toggle" onclick="toggleThumbnails()">📷</button>
   </div>
 
   <!-- Nội dung -->
@@ -214,6 +193,7 @@
     const sound = document.getElementById('meowSound');
     const bgImage = document.getElementById('bgImage');
     const thumbnailList = document.getElementById('thumbnailList');
+    const bgContainer = document.getElementById('bgContainer');
 
     let avatarIndex = 0;
     let currentX = 0;
@@ -239,8 +219,6 @@
         sound.play();
       }, 400);
     }
-
-    const bgContainer = document.getElementById('bgContainer');
 
     bgContainer.addEventListener('mousedown', e => {
       isDragging = true;
@@ -289,9 +267,9 @@
       thumbnailList.style.display = 'none';
     }
 
-    function toggleThumbnails() {
+    bgImage.addEventListener('click', () => {
       thumbnailList.style.display = thumbnailList.style.display === 'flex' ? 'none' : 'flex';
-    }
+    });
 
     function saveBackgroundState() {
       const state = {
