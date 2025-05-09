@@ -192,6 +192,69 @@
     .thumbnails img.selected {
       border-color: #ffccff;
     }
+    @media (max-width: 768px) {
+  .background-image {
+    height: 300px;
+  }
+
+  .controls {
+    top: 5px;
+    right: 10px;
+    gap: 5px;
+  }
+
+  .container {
+    flex-direction: column;
+    align-items: center;
+    margin-top: -50px;
+    text-align: center;
+    padding: 0 10px;
+  }
+
+  .avatar-container {
+    padding-left: 0;
+    justify-content: center;
+    margin-bottom: 10px;
+  }
+
+  img.avatar {
+    width: 150px;
+    height: 150px;
+  }
+
+  .text-container {
+    padding-left: 0;
+    margin-top: 20px;
+  }
+
+  h1 {
+    font-size: 26px;
+  }
+
+  p {
+    font-size: 18px;
+  }
+
+  .thumbnails {
+    flex-direction: row;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .thumbnails img {
+    width: 80px;
+    height: 50px;
+  }
+
+  #passwordOverlay h2 {
+    font-size: 18px;
+    padding: 0 20px;
+  }
+
+  #passwordInput {
+    width: 80%;
+  }
+}
   </style>
 </head>
 <body>
