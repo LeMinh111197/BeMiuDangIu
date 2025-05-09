@@ -68,37 +68,18 @@
       background: rgba(255, 255, 255, 0.3);
     }
 
-    .thumbnail-toggle {
-      position: absolute;
-      bottom: 10px;
-      right: 20px;
-      background: rgba(255, 255, 255, 0.2);
-      border: none;
-      color: #fff;
-      font-size: 18px;
-      border-radius: 50%;
-      width: 36px;
-      height: 36px;
-      cursor: pointer;
-      opacity: 0.6;
-      backdrop-filter: blur(5px);
+    .container {
+      position: relative;
+      display: flex;
+      align-items: flex-start;
+      justify-content: flex-start;
+      flex-wrap: nowrap;
+      margin-top: 30px;
+      padding: 20px 40px;
       z-index: 2;
     }
 
-    .thumbnail-toggle:hover {
-      opacity: 1;
-    }
-
-    .info-below {
-      display: flex;
-      align-items: center;
-      justify-content: flex-start;
-      padding: 30px 40px;
-      gap: 30px;
-    }
-
     .avatar-container {
-      width: 200px;
       flex-shrink: 0;
     }
 
@@ -117,20 +98,22 @@
       transform: scale(1.05);
     }
 
-    .text-info {
-      flex: 1;
+    .text-container {
+      margin-left: 40px;
+      margin-top: 40px;
+      text-align: left;
     }
 
-    .text-info h1 {
+    h1 {
+      color: #ffccff;
       font-size: 32px;
       margin: 0;
-      color: #ffccff;
     }
 
-    .text-info p {
+    p {
       font-size: 20px;
       color: #eeeeee;
-      margin-top: 10px;
+      margin: 10px 0 0 0;
     }
 
     .thumbnails {
@@ -163,11 +146,32 @@
     .thumbnails img.selected {
       border-color: #ffccff;
     }
+
+    .thumbnail-toggle {
+      position: absolute;
+      bottom: 10px;
+      right: 20px;
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      color: #fff;
+      font-size: 18px;
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      cursor: pointer;
+      opacity: 0.6;
+      backdrop-filter: blur(5px);
+      z-index: 2;
+    }
+
+    .thumbnail-toggle:hover {
+      opacity: 1;
+    }
   </style>
 </head>
 <body>
 
-  <!-- Ảnh nền -->
+  <!-- Ảnh nền cố định -->
   <div class="background-image" id="bgContainer">
     <img id="bgImage" src="4.JPG" alt="Ảnh nền">
     <div class="controls">
@@ -178,18 +182,18 @@
     <button class="thumbnail-toggle" onclick="toggleThumbnails()">📷</button>
   </div>
 
-  <!-- Phần thông tin bên dưới ảnh nền -->
-  <div class="info-below">
+  <!-- Nội dung -->
+  <div class="container">
     <div class="avatar-container">
       <img id="avatar" class="avatar" src="9.JPG" alt="Ảnh Miu" onclick="doiAnhMiu()">
     </div>
-    <div class="text-info">
+    <div class="text-container">
       <h1>Bé Miu đáng iu</h1>
       <p>Chào mừng bạn đến với thế giới dễ thương của bé Miu!</p>
     </div>
   </div>
 
-  <!-- Thumbnails ảnh nền -->
+  <!-- Danh sách ảnh nền -->
   <div class="thumbnails" id="thumbnailList">
     <img src="1.JPG" onclick="changeBackground(this)">
     <img src="2.JPG" onclick="changeBackground(this)">
@@ -198,7 +202,7 @@
     <img src="5.JPG" onclick="changeBackground(this)">
   </div>
 
-  <!-- Âm thanh meo -->
+  <!-- Âm thanh mèo -->
   <audio id="meowSound" src="meow.mp3" preload="auto"></audio>
 
   <script>
@@ -214,6 +218,7 @@
     let isDragging = false;
     let startX;
 
+    // Load avatar đã lưu
     const savedAvatar = localStorage.getItem('selectedAvatar');
     if (savedAvatar && avatars.includes(savedAvatar)) {
       avatar.src = savedAvatar;
@@ -233,6 +238,7 @@
       }, 400);
     }
 
+    // Zoom và kéo ảnh nền
     const bgContainer = document.getElementById('bgContainer');
 
     bgContainer.addEventListener('mousedown', e => {
@@ -279,6 +285,7 @@
 
       bgImage.src = imgElement.src;
       saveBackgroundState();
+
       thumbnailList.style.display = 'none';
     }
 
@@ -325,5 +332,6 @@
       saveBackgroundState();
     });
   </script>
+
 </body>
 </html>
