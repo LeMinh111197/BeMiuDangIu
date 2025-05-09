@@ -29,14 +29,20 @@
       overflow: hidden;
       position: relative;
       border-bottom: 3px solid #ffccff;
+      cursor: grab;
     }
 
     .background-image img {
-      width: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
       height: auto;
-      display: block;
+      width: auto;
+      min-width: 100%;
+      min-height: 100%;
       user-drag: none;
       user-select: none;
+      cursor: grab;
     }
 
     .container {
@@ -90,12 +96,12 @@
 </head>
 <body>
 
-  <!-- Ảnh nền cố định -->
-  <div class="background-image">
-    <img src="4.JPG" alt="Ảnh nền">
+  <!-- Ảnh nền di chuyển được -->
+  <div class="background-image" id="bgContainer">
+    <img id="bgImage" src="4.JPG" alt="Ảnh nền">
   </div>
 
-  <!-- Phần nội dung đè lên ảnh nền -->
+  <!-- Phần nội dung -->
   <div class="container">
     <div class="avatar-container">
       <img id="avatar" class="avatar" src="9.JPG" alt="Ảnh Miu" onclick="doiAnhMiu()">
@@ -126,6 +132,51 @@
         sound.play();
       }, 400);
     }
+
+    // Di chuyển ảnh nền
+    const bgImage = document.getElementById('bgImage');
+    const bgContainer = document.getElementById('bgContainer');
+    let isDragging = false;
+    let startX, startY, currentX = 0, currentY = 0;
+
+    bgContainer.addEventListener('mousedown', function(e) {
+      isDragging = true;
+      bgImage.style.cursor = 'grabbing';
+      startX = e.clientX - currentX;
+      startY = e.clientY - currentY;
+    });
+
+    document.addEventListener('mouseup', function() {
+      isDragging = false;
+      bgImage.style.cursor = 'grab';
+    });
+
+    document.addEventListener('mousemove', function(e) {
+      if (!isDragging) return;
+      currentX = e.clientX - startX;
+      currentY = e.clientY - startY;
+      bgImage.style.left = currentX + 'px';
+      bgImage.style.top = currentY + 'px';
+    });
+
+    // Cho điện thoại
+    bgContainer.addEventListener('touchstart', function(e) {
+      isDragging = true;
+      startX = e.touches[0].clientX - currentX;
+      startY = e.touches[0].clientY - currentY;
+    });
+
+    document.addEventListener('touchend', function() {
+      isDragging = false;
+    });
+
+    document.addEventListener('touchmove', function(e) {
+      if (!isDragging) return;
+      currentX = e.touches[0].clientX - startX;
+      currentY = e.touches[0].clientY - startY;
+      bgImage.style.left = currentX + 'px';
+      bgImage.style.top = currentY + 'px';
+    });
   </script>
 
 </body>
