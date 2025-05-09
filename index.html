@@ -36,12 +36,9 @@
       position: absolute;
       top: 0;
       left: 0;
-      height: auto;
-      width: auto;
-      min-width: 100%;
-      min-height: 100%;
       user-drag: none;
       user-select: none;
+      transform-origin: top left;
       cursor: grab;
     }
 
@@ -96,7 +93,7 @@
 </head>
 <body>
 
-  <!-- Ảnh nền di chuyển được -->
+  <!-- Ảnh nền có thể kéo và zoom -->
   <div class="background-image" id="bgContainer">
     <img id="bgImage" src="4.JPG" alt="Ảnh nền">
   </div>
@@ -112,7 +109,6 @@
     </div>
   </div>
 
-  <!-- Âm thanh meo -->
   <audio id="meowSound" src="meow.mp3" preload="auto"></audio>
 
   <script>
@@ -133,17 +129,19 @@
       }, 400);
     }
 
-    // Di chuyển ảnh nền
     const bgImage = document.getElementById('bgImage');
     const bgContainer = document.getElementById('bgContainer');
     let isDragging = false;
-    let startX, startY, currentX = 0, currentY = 0;
+    let startX, startY;
+    let currentX = 0, currentY = 0;
+    let scale = 1;
 
+    // Kéo ảnh nền
     bgContainer.addEventListener('mousedown', function(e) {
       isDragging = true;
-      bgImage.style.cursor = 'grabbing';
       startX = e.clientX - currentX;
       startY = e.clientY - currentY;
+      bgImage.style.cursor = 'grabbing';
     });
 
     document.addEventListener('mouseup', function() {
@@ -155,11 +153,23 @@
       if (!isDragging) return;
       currentX = e.clientX - startX;
       currentY = e.clientY - startY;
-      bgImage.style.left = currentX + 'px';
-      bgImage.style.top = currentY + 'px';
+      updateTransform();
     });
 
-    // Cho điện thoại
+    // Zoom bằng cuộn chuột
+    bgContainer.addEventListener('wheel', function(e) {
+      e.preventDefault();
+      const zoomAmount = 0.05;
+      if (e.deltaY < 0) {
+        scale += zoomAmount;
+      } else {
+        scale -= zoomAmount;
+        if (scale < 0.3) scale = 0.3;
+      }
+      updateTransform();
+    });
+
+    // Cho cảm ứng
     bgContainer.addEventListener('touchstart', function(e) {
       isDragging = true;
       startX = e.touches[0].clientX - currentX;
@@ -174,9 +184,12 @@
       if (!isDragging) return;
       currentX = e.touches[0].clientX - startX;
       currentY = e.touches[0].clientY - startY;
-      bgImage.style.left = currentX + 'px';
-      bgImage.style.top = currentY + 'px';
+      updateTransform();
     });
+
+    function updateTransform() {
+      bgImage.style.transform = `translate(${currentX}px, ${currentY}px) scale(${scale})`;
+    }
   </script>
 
 </body>
