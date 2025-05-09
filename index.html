@@ -4,14 +4,17 @@
   <meta charset="UTF-8">
   <title>Bé Miu đáng iu</title>
   <style>
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+    }
 
     body {
       margin: 0;
-      font-family: 'Segoe UI', sans-serif;
+      font-family: 'Arial', sans-serif;
       color: #fff;
       background-image: url('galaxy.jpg');
       background-size: cover;
+      background-repeat: repeat;
       animation: moveGalaxy 60s linear infinite;
     }
 
@@ -20,75 +23,66 @@
       100% { background-position: -2000px 0; }
     }
 
-    .background-wrapper {
-      position: relative;
-      width: 100%;
-      height: 400px;
-      overflow: hidden;
-      border-bottom: 4px solid #ffc1e3;
-    }
-
     .background-image {
       width: 100%;
-      height: 100%;
+      height: 500px;
       overflow: hidden;
       position: relative;
-      cursor: grab;
+      border-bottom: 3px solid #ffccff;
     }
 
     .background-image img {
       position: absolute;
       top: 0;
       left: 0;
+      height: 100%;
+      width: auto;
+      user-drag: none;
       user-select: none;
-      transform-origin: top left;
-      cursor: grab;
-      border-radius: 16px;
+      transition: transform 0.2s ease;
     }
 
     .controls {
       position: absolute;
-      top: 20px;
+      top: 10px;
       right: 20px;
-      z-index: 3;
       display: flex;
-      flex-direction: column;
       gap: 10px;
+      opacity: 0.5;
+      z-index: 2;
     }
 
     .controls button {
-      width: 42px;
-      height: 42px;
-      font-size: 22px;
-      font-weight: bold;
+      background: rgba(255, 255, 255, 0.2);
       border: none;
-      border-radius: 50%;
-      background-color: #ffb6c1;
-      color: white;
+      color: #fff;
+      font-size: 20px;
+      border-radius: 8px;
+      padding: 4px 10px;
       cursor: pointer;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-      opacity: 0.5;
-      transition: all 0.3s ease;
+      backdrop-filter: blur(5px);
+      transition: background 0.3s;
     }
 
     .controls button:hover {
-      background-color: #ff80ab;
-      transform: scale(1.1);
-      opacity: 1;
+      background: rgba(255, 255, 255, 0.3);
     }
 
     .container {
       position: relative;
-      width: 100%;
-      max-width: 1200px;
-      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: -100px;
+      z-index: 2;
     }
 
     .avatar-container {
-      position: absolute;
-      bottom: -100px;
-      left: 40px;
-      z-index: 2;
+      flex: 1;
+      display: flex;
+      justify-content: flex-start;
+      padding-left: 40px;
     }
 
     img.avatar {
@@ -96,11 +90,10 @@
       height: 200px;
       object-fit: cover;
       border-radius: 50%;
-      border: 6px solid #ffcce0;
+      border: 5px solid #ff80ab;
       cursor: pointer;
+      transition: transform 0.3s ease, opacity 0.4s;
       background-color: #fff;
-      transition: opacity 0.4s ease, transform 0.3s ease;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     }
 
     img.avatar:hover {
@@ -108,40 +101,67 @@
     }
 
     .text-container {
-      position: absolute;
-      bottom: -70px;
-      left: 260px;
-      z-index: 1;
+      flex: 2;
+      text-align: left;
+      padding-left: 40px;
     }
 
     h1 {
       color: #ffccff;
-      font-size: 34px;
+      font-size: 32px;
       margin: 0;
-      font-weight: 600;
     }
 
     p {
       font-size: 20px;
-      color: #fefefe;
+      color: #eeeeee;
       margin: 10px 0 0 0;
+    }
+
+    .thumbnails {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      padding: 10px;
+      background: rgba(255, 255, 255, 0.05);
+      border-top: 2px solid #ffccff;
+      margin-top: 20px;
+    }
+
+    .thumbnails img {
+      width: 100px;
+      height: 60px;
+      object-fit: cover;
+      margin: 5px;
+      border-radius: 8px;
+      border: 2px solid transparent;
+      cursor: pointer;
+      transition: transform 0.2s, border-color 0.2s;
+    }
+
+    .thumbnails img:hover {
+      transform: scale(1.05);
+      border-color: #ff80ab;
+    }
+
+    .thumbnails img.selected {
+      border-color: #ffccff;
     }
   </style>
 </head>
 <body>
 
-  <div class="background-wrapper">
-    <div class="background-image" id="bgContainer">
-      <img id="bgImage" src="4.JPG" alt="Ảnh nền">
-    </div>
-
+  <!-- Ảnh nền cố định -->
+  <div class="background-image" id="bgContainer">
+    <img id="bgImage" src="4.JPG" alt="Ảnh nền">
     <div class="controls">
       <button onclick="zoomIn()">+</button>
       <button onclick="zoomOut()">−</button>
-      <button onclick="resetTransform()">⟳</button>
+      <button onclick="resetImage()">⟲</button>
     </div>
   </div>
 
+  <!-- Nội dung -->
   <div class="container">
     <div class="avatar-container">
       <img id="avatar" class="avatar" src="9.JPG" alt="Ảnh Miu" onclick="doiAnhMiu()">
@@ -152,113 +172,141 @@
     </div>
   </div>
 
+  <!-- Danh sách ảnh nền -->
+  <div class="thumbnails" id="thumbnailList">
+    <img src="1.JPG" onclick="changeBackground(this)">
+    <img src="2.JPG" onclick="changeBackground(this)">
+    <img src="3.JPG" onclick="changeBackground(this)">
+    <img src="4.JPG" onclick="changeBackground(this)">
+    <img src="5.JPG" onclick="changeBackground(this)">
+  </div>
+
+  <!-- Âm thanh mèo -->
   <audio id="meowSound" src="meow.mp3" preload="auto"></audio>
 
   <script>
     const avatars = ["1.JPG", "2.JPG", "3.JPG", "4.JPG", "5.JPG", "6.JPG", "7.JPG", "8.JPG", "9.JPG"];
+    const avatar = document.getElementById('avatar');
+    const sound = document.getElementById('meowSound');
+
+    const savedAvatar = localStorage.getItem('selectedAvatar');
     let avatarIndex = 0;
 
+    if (savedAvatar && avatars.includes(savedAvatar)) {
+      avatar.src = savedAvatar;
+      avatarIndex = avatars.indexOf(savedAvatar);
+    }
+
     function doiAnhMiu() {
-      const avatar = document.getElementById('avatar');
-      const sound = document.getElementById('meowSound');
       avatar.style.opacity = 0;
       setTimeout(() => {
         avatarIndex = (avatarIndex + 1) % avatars.length;
-        avatar.src = avatars[avatarIndex];
+        const newAvatar = avatars[avatarIndex];
+        avatar.src = newAvatar;
+        localStorage.setItem('selectedAvatar', newAvatar);
         avatar.style.opacity = 1;
         sound.currentTime = 0;
         sound.play();
       }, 400);
     }
 
+    // Zoom & drag
     const bgImage = document.getElementById('bgImage');
     const bgContainer = document.getElementById('bgContainer');
     let isDragging = false;
-    let startX = 0, startY = 0;
-    let currentX = 0, currentY = 0;
+    let startX, currentX = 0;
     let scale = 1;
-
-    function updateTransform() {
-      bgImage.style.transform = `translate(${currentX}px, ${currentY}px) scale(${scale})`;
-      localStorage.setItem('bgPosition', JSON.stringify({ x: currentX, y: currentY, scale }));
-    }
-
-    function zoomIn() {
-      scale += 0.1;
-      updateTransform();
-    }
-
-    function zoomOut() {
-      scale = Math.max(0.3, scale - 0.1);
-      updateTransform();
-    }
-
-    function resetTransform() {
-      scale = 1;
-      currentX = 0;
-      currentY = 0;
-      updateTransform();
-    }
-
-    function loadSavedPosition() {
-      const saved = localStorage.getItem('bgPosition');
-      if (saved) {
-        try {
-          const { x, y, scale: savedScale } = JSON.parse(saved);
-          currentX = x;
-          currentY = y;
-          scale = savedScale;
-          updateTransform();
-        } catch (e) {
-          console.error("Lỗi khi tải vị trí:", e);
-        }
-      }
-    }
 
     bgContainer.addEventListener('mousedown', function(e) {
       isDragging = true;
       startX = e.clientX - currentX;
-      startY = e.clientY - currentY;
-      bgImage.style.cursor = 'grabbing';
     });
 
-    document.addEventListener('mouseup', () => {
+    document.addEventListener('mouseup', function() {
       isDragging = false;
-      bgImage.style.cursor = 'grab';
     });
 
     document.addEventListener('mousemove', function(e) {
       if (!isDragging) return;
       currentX = e.clientX - startX;
-      currentY = e.clientY - startY;
-      updateTransform();
+      bgImage.style.left = currentX + 'px';
+      saveBackgroundState();
     });
 
-    bgContainer.addEventListener('wheel', function(e) {
-      e.preventDefault();
-      const zoomAmount = 0.05;
-      if (e.deltaY < 0) scale += zoomAmount;
-      else scale = Math.max(0.3, scale - zoomAmount);
-      updateTransform();
+    function zoomIn() {
+      scale += 0.1;
+      updateZoom();
+    }
+
+    function zoomOut() {
+      scale = Math.max(0.5, scale - 0.1);
+      updateZoom();
+    }
+
+    function resetImage() {
+      scale = 1;
+      currentX = 0;
+      updateZoom();
+      bgImage.style.left = '0px';
+      saveBackgroundState();
+    }
+
+    function updateZoom() {
+      bgImage.style.transform = `scale(${scale})`;
+      saveBackgroundState();
+    }
+
+    function saveBackgroundState() {
+      const state = {
+        left: bgImage.style.left,
+        scale: scale,
+        src: bgImage.src
+      };
+      localStorage.setItem('bgState', JSON.stringify(state));
+    }
+
+    function changeBackground(imgElement) {
+      const thumbnails = document.querySelectorAll('.thumbnails img');
+      thumbnails.forEach(t => t.classList.remove('selected'));
+      imgElement.classList.add('selected');
+
+      bgImage.src = imgElement.src;
+      saveBackgroundState();
+    }
+
+    window.addEventListener('load', () => {
+      const saved = JSON.parse(localStorage.getItem('bgState'));
+      if (saved) {
+        currentX = parseInt(saved.left) || 0;
+        scale = saved.scale || 1;
+        bgImage.src = saved.src || '4.JPG';
+        bgImage.style.left = currentX + 'px';
+        updateZoom();
+
+        // Đánh dấu thumbnail đang được chọn
+        const thumbs = document.querySelectorAll('.thumbnails img');
+        thumbs.forEach(t => {
+          if (t.src === bgImage.src) t.classList.add('selected');
+        });
+      }
     });
 
     // Touch support
     bgContainer.addEventListener('touchstart', function(e) {
       isDragging = true;
       startX = e.touches[0].clientX - currentX;
-      startY = e.touches[0].clientY - currentY;
     });
 
-    document.addEventListener('touchend', () => isDragging = false);
+    document.addEventListener('touchend', function() {
+      isDragging = false;
+    });
 
     document.addEventListener('touchmove', function(e) {
       if (!isDragging) return;
       currentX = e.touches[0].clientX - startX;
-      currentY = e.touches[0].clientY - startY;
-      updateTransform();
+      bgImage.style.left = currentX + 'px';
+      saveBackgroundState();
     });
-
-    window.onload = loadSavedPosition;
   </script>
 
 </body>
