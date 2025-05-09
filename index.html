@@ -295,6 +295,7 @@
     function logout() {
       if (confirm('Bạn có chắc muốn đăng xuất không?')) {
         localStorage.clear();
+        location.reload();
       }
     }
 
