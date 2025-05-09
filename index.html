@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+!DOCTYPE html>
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
@@ -28,7 +28,6 @@
       height: 500px;
       overflow: hidden;
       position: relative;
-      cursor: grab;
       border-bottom: 3px solid #ffccff;
     }
 
@@ -40,11 +39,6 @@
       width: auto;
       user-drag: none;
       user-select: none;
-      cursor: grab;
-    }
-
-    .background-image:active img {
-      cursor: grabbing;
     }
 
     .container {
@@ -53,7 +47,7 @@
       align-items: center;
       justify-content: center;
       flex-wrap: wrap;
-      margin-top: -100px; /* Đẩy container lên đè lên ảnh nền */
+      margin-top: -100px; /* Đẩy container lên đè ảnh nền */
     }
 
     .avatar-container {
@@ -100,9 +94,9 @@
 </head>
 <body>
 
-  <!-- Ảnh nền lớn -->
-  <div class="background-image" onclick="doiAnhNen()" id="bgContainer">
-    <img id="bgImage" src="1.JPG" alt="Ảnh nền">
+  <!-- Ảnh nền cố định -->
+  <div class="background-image">
+    <img src="4.JPG" alt="Ảnh nền">
   </div>
 
   <!-- Phần nội dung đè lên ảnh nền -->
@@ -122,7 +116,6 @@
   <script>
     const avatars = ["1.JPG", "2.JPG", "3.JPG", "4.JPG", "5.JPG", "6.JPG", "7.JPG", "8.JPG", "9.JPG"];
     let avatarIndex = 0;
-    let bgIndex = 0;
 
     function doiAnhMiu() {
       const avatar = document.getElementById('avatar');
@@ -133,48 +126,6 @@
       sound.currentTime = 0;
       sound.play();
     }
-
-    function doiAnhNen() {
-      const bgImage = document.getElementById('bgImage');
-      bgIndex = (bgIndex + 1) % avatars.length;
-      bgImage.src = avatars[bgIndex];
-    }
-
-    // Kéo ảnh nền
-    const bgImage = document.getElementById('bgImage');
-    const bgContainer = document.getElementById('bgContainer');
-    let isDragging = false;
-    let startX, currentX = 0;
-
-    bgContainer.addEventListener('mousedown', function(e) {
-      isDragging = true;
-      startX = e.clientX - currentX;
-    });
-
-    document.addEventListener('mouseup', function() {
-      isDragging = false;
-    });
-
-    document.addEventListener('mousemove', function(e) {
-      if (!isDragging) return;
-      currentX = e.clientX - startX;
-      bgImage.style.left = currentX + 'px';
-    });
-
-    bgContainer.addEventListener('touchstart', function(e) {
-      isDragging = true;
-      startX = e.touches[0].clientX - currentX;
-    });
-
-    document.addEventListener('touchend', function() {
-      isDragging = false;
-    });
-
-    document.addEventListener('touchmove', function(e) {
-      if (!isDragging) return;
-      currentX = e.touches[0].clientX - startX;
-      bgImage.style.left = currentX + 'px';
-    });
   </script>
 
 </body>
