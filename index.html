@@ -33,6 +33,7 @@
       top: 0;
       left: 0;
       height: 100%;
+      min-width: 100%; /* ✅ đảm bảo ảnh luôn phủ hết chiều ngang */
       user-drag: none;
       user-select: none;
       cursor: grab;
@@ -86,14 +87,17 @@
 </head>
 <body>
 
+  <!-- Ảnh nền có thể đổi và kéo -->
   <div class="background-image" onclick="doiAnhNen()" id="bgContainer">
     <img id="bgImage" src="1.JPG" alt="Ảnh nền">
   </div>
 
+  <!-- Ảnh đại diện nằm đè lên nền -->
   <div class="avatar-container">
     <img id="avatar" class="avatar" src="1.JPG" alt="Ảnh Miu" onclick="doiAnhMiu()">
   </div>
 
+  <!-- Phần chữ giới thiệu -->
   <div class="container">
     <div class="text-container">
       <h1>Gia đình bé Miu đáng iu</h1>
@@ -101,8 +105,10 @@
     </div>
   </div>
 
+  <!-- Âm thanh meow -->
   <audio id="meowSound" src="meow.mp3" preload="auto"></audio>
 
+  <!-- JavaScript -->
   <script>
     const avatars = ["1.JPG", "2.JPG", "3.JPG", "4.JPG", "5.JPG", "6.JPG", "7.JPG", "8.JPG", "9.JPG"];
     let avatarIndex = 0;
@@ -125,7 +131,7 @@
       bgImage.src = avatars[bgIndex];
     }
 
-    // Kéo ảnh nền trái phải
+    // Kéo ảnh nền trái/phải
     const bgImage = document.getElementById('bgImage');
     const bgContainer = document.getElementById('bgContainer');
     let isDragging = false;
