@@ -119,13 +119,14 @@
     }
 
     .thumbnails {
-      display: flex;
+      display: none;
       justify-content: center;
       flex-wrap: wrap;
       padding: 10px;
       background: rgba(255, 255, 255, 0.05);
       border-top: 2px solid #ffccff;
       margin-top: 20px;
+      transition: all 0.3s ease;
     }
 
     .thumbnails img {
@@ -147,6 +148,27 @@
     .thumbnails img.selected {
       border-color: #ffccff;
     }
+
+    .thumbnail-toggle {
+      position: absolute;
+      bottom: 10px;
+      right: 20px;
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      color: #fff;
+      font-size: 18px;
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      cursor: pointer;
+      opacity: 0.6;
+      backdrop-filter: blur(5px);
+      z-index: 2;
+    }
+
+    .thumbnail-toggle:hover {
+      opacity: 1;
+    }
   </style>
 </head>
 <body>
@@ -159,6 +181,7 @@
       <button onclick="zoomOut()">−</button>
       <button onclick="resetImage()">⟲</button>
     </div>
+    <button class="thumbnail-toggle" onclick="toggleThumbnails()">📷</button>
   </div>
 
   <!-- Nội dung -->
@@ -188,10 +211,17 @@
     const avatars = ["1.JPG", "2.JPG", "3.JPG", "4.JPG", "5.JPG", "6.JPG", "7.JPG", "8.JPG", "9.JPG"];
     const avatar = document.getElementById('avatar');
     const sound = document.getElementById('meowSound');
+    const bgImage = document.getElementById('bgImage');
+    const thumbnailList = document.getElementById('thumbnailList');
 
-    const savedAvatar = localStorage.getItem('selectedAvatar');
     let avatarIndex = 0;
+    let currentX = 0;
+    let scale = 1;
+    let isDragging = false;
+    let startX;
 
+    // Load avatar đã lưu
+    const savedAvatar = localStorage.getItem('selectedAvatar');
     if (savedAvatar && avatars.includes(savedAvatar)) {
       avatar.src = savedAvatar;
       avatarIndex = avatars.indexOf(savedAvatar);
@@ -210,23 +240,17 @@
       }, 400);
     }
 
-    // Zoom & drag
-    const bgImage = document.getElementById('bgImage');
+    // Zoom và kéo ảnh nền
     const bgContainer = document.getElementById('bgContainer');
-    let isDragging = false;
-    let startX, currentX = 0;
-    let scale = 1;
 
-    bgContainer.addEventListener('mousedown', function(e) {
+    bgContainer.addEventListener('mousedown', e => {
       isDragging = true;
       startX = e.clientX - currentX;
     });
 
-    document.addEventListener('mouseup', function() {
-      isDragging = false;
-    });
+    document.addEventListener('mouseup', () => isDragging = false);
 
-    document.addEventListener('mousemove', function(e) {
+    document.addEventListener('mousemove', e => {
       if (!isDragging) return;
       currentX = e.clientX - startX;
       bgImage.style.left = currentX + 'px';
@@ -246,14 +270,30 @@
     function resetImage() {
       scale = 1;
       currentX = 0;
-      updateZoom();
       bgImage.style.left = '0px';
+      updateZoom();
       saveBackgroundState();
     }
 
     function updateZoom() {
       bgImage.style.transform = `scale(${scale})`;
       saveBackgroundState();
+    }
+
+    function changeBackground(imgElement) {
+      const thumbs = document.querySelectorAll('.thumbnails img');
+      thumbs.forEach(t => t.classList.remove('selected'));
+      imgElement.classList.add('selected');
+
+      bgImage.src = imgElement.src;
+      saveBackgroundState();
+
+      // Ẩn thumbnails sau khi chọn
+      thumbnailList.style.display = 'none';
+    }
+
+    function toggleThumbnails() {
+      thumbnailList.style.display = thumbnailList.style.display === 'flex' ? 'none' : 'flex';
     }
 
     function saveBackgroundState() {
@@ -265,15 +305,7 @@
       localStorage.setItem('bgState', JSON.stringify(state));
     }
 
-    function changeBackground(imgElement) {
-      const thumbnails = document.querySelectorAll('.thumbnails img');
-      thumbnails.forEach(t => t.classList.remove('selected'));
-      imgElement.classList.add('selected');
-
-      bgImage.src = imgElement.src;
-      saveBackgroundState();
-    }
-
+    // Load trạng thái đã lưu
     window.addEventListener('load', () => {
       const saved = JSON.parse(localStorage.getItem('bgState'));
       if (saved) {
@@ -283,7 +315,6 @@
         bgImage.style.left = currentX + 'px';
         updateZoom();
 
-        // Đánh dấu thumbnail đang được chọn
         const thumbs = document.querySelectorAll('.thumbnails img');
         thumbs.forEach(t => {
           if (t.src === bgImage.src) t.classList.add('selected');
@@ -291,17 +322,15 @@
       }
     });
 
-    // Touch support
-    bgContainer.addEventListener('touchstart', function(e) {
+    // Hỗ trợ cảm ứng
+    bgContainer.addEventListener('touchstart', e => {
       isDragging = true;
       startX = e.touches[0].clientX - currentX;
     });
 
-    document.addEventListener('touchend', function() {
-      isDragging = false;
-    });
+    document.addEventListener('touchend', () => isDragging = false);
 
-    document.addEventListener('touchmove', function(e) {
+    document.addEventListener('touchmove', e => {
       if (!isDragging) return;
       currentX = e.touches[0].clientX - startX;
       bgImage.style.left = currentX + 'px';
