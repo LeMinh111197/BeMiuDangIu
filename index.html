@@ -21,6 +21,26 @@
       100% { background-position: -2000px 0; }
     }
 
+    #logoutBtn {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      z-index: 10000;
+      padding: 8px 16px;
+      background-color: #ff80ab;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.3s;
+      display: none;
+    }
+
+    #logoutBtn:hover {
+      background-color: #ff99bb;
+    }
+
     #passwordOverlay {
       position: fixed;
       top: 0; left: 0;
@@ -192,81 +212,18 @@
     .thumbnails img.selected {
       border-color: #ffccff;
     }
-    @media (max-width: 768px) {
-  .background-image {
-    height: 300px;
-  }
-
-  .controls {
-    top: 5px;
-    right: 10px;
-    gap: 5px;
-  }
-
-  .container {
-    flex-direction: column;
-    align-items: center;
-    margin-top: -50px;
-    text-align: center;
-    padding: 0 10px;
-  }
-
-  .avatar-container {
-    padding-left: 0;
-    justify-content: center;
-    margin-bottom: 10px;
-  }
-
-  img.avatar {
-    width: 150px;
-    height: 150px;
-  }
-
-  .text-container {
-    padding-left: 0;
-    margin-top: 20px;
-  }
-
-  h1 {
-    font-size: 26px;
-  }
-
-  p {
-    font-size: 18px;
-  }
-
-  .thumbnails {
-    flex-direction: row;
-    justify-content: center;
-    flex-wrap: wrap;
-  }
-
-  .thumbnails img {
-    width: 80px;
-    height: 50px;
-  }
-
-  #passwordOverlay h2 {
-    font-size: 18px;
-    padding: 0 20px;
-  }
-
-  #passwordInput {
-    width: 80%;
-  }
-}
   </style>
 </head>
 <body>
 
-  <!-- Lớp phủ yêu cầu mật khẩu -->
+  <button id="logoutBtn" onclick="logout()">Đăng xuất</button>
+
   <div id="passwordOverlay">
     <h2>Để tiếp tục xem ảnh Bé Miu, vui lòng nhập mật khẩu vào ô sau :</h2>
     <input type="password" id="passwordInput" placeholder="Nhập mật khẩu...">
     <button onclick="checkPassword()">Xác nhận</button>
   </div>
 
-  <!-- Ảnh nền -->
   <div class="background-image" id="bgContainer">
     <img id="bgImage" src="4.JPG" alt="Ảnh nền">
     <div class="controls">
@@ -276,7 +233,6 @@
     </div>
   </div>
 
-  <!-- Nội dung -->
   <div class="container">
     <div class="avatar-container">
       <img id="avatar" class="avatar" src="9.JPG" alt="Ảnh Miu" onclick="doiAnhMiu()">
@@ -287,7 +243,6 @@
     </div>
   </div>
 
-  <!-- Danh sách ảnh nền -->
   <div class="thumbnails" id="thumbnailList">
     <img src="1.JPG" onclick="changeBackground(this)">
     <img src="2.JPG" onclick="changeBackground(this)">
@@ -296,7 +251,6 @@
     <img src="5.JPG" onclick="changeBackground(this)">
   </div>
 
-  <!-- Âm thanh mèo -->
   <audio id="meowSound" src="meow.mp3" preload="auto"></audio>
 
   <script>
@@ -306,8 +260,16 @@
       const input = document.getElementById('passwordInput').value;
       if (input === correctPassword) {
         document.getElementById('passwordOverlay').style.display = 'none';
+        document.getElementById('logoutBtn').style.display = 'block';
       } else {
         alert('Sai mật khẩu!');
+      }
+    }
+
+    function logout() {
+      if (confirm('Bạn có chắc muốn đăng xuất không?')) {
+        localStorage.clear();
+        location.reload();
       }
     }
 
