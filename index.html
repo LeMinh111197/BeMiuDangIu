@@ -4,287 +4,216 @@
   <meta charset="UTF-8">
   <title>Bé Miu đáng iu</title>
   <style>
-    * { box-sizing: border-box; }
     body {
       margin: 0;
-      font-family: 'Arial', sans-serif;
+      font-family: Arial, sans-serif;
       color: #fff;
-      background-image: url('galaxy.jpg');
+      background: #000 url('galaxy.jpg') repeat;
       background-size: cover;
-      background-repeat: repeat;
       animation: moveGalaxy 60s linear infinite;
     }
+
     @keyframes moveGalaxy {
       0% { background-position: 0 0; }
       100% { background-position: -2000px 0; }
     }
+
     .background-image {
-      width: 100%; height: 500px;
-      overflow: hidden; position: relative;
+      width: 100%;
+      height: 500px;
+      position: relative;
+      overflow: hidden;
       border-bottom: 3px solid #ffccff;
     }
+
     .background-image img {
-      position: absolute; top: 0; left: 0;
-      height: 100%; width: auto;
-      user-drag: none; user-select: none;
-      transition: transform 0.2s ease;
-    }
-    .controls {
+      width: auto;
+      height: 100%;
       position: absolute;
-      top: 10px; right: 20px;
-      display: flex; gap: 10px;
-      opacity: 0.5; z-index: 2;
+      top: 0;
+      left: 0;
+      transition: transform 0.3s ease;
+      user-select: none;
     }
-    .controls button {
-      background: rgba(255, 255, 255, 0.2);
-      border: none; color: #fff;
-      font-size: 20px;
-      border-radius: 8px;
-      padding: 4px 10px;
-      cursor: pointer;
-      backdrop-filter: blur(5px);
-      transition: background 0.3s;
-    }
-    .controls button:hover {
-      background: rgba(255, 255, 255, 0.3);
-    }
+
     .container {
-      position: relative;
       display: flex;
       align-items: center;
       justify-content: center;
-      flex-wrap: wrap;
       margin-top: -100px;
-      z-index: 2;
+      flex-wrap: wrap;
     }
+
     .avatar-container {
       flex: 1;
       display: flex;
       justify-content: flex-start;
       padding-left: 40px;
     }
+
     img.avatar {
-      width: 200px; height: 200px;
+      width: 200px;
+      height: 200px;
       object-fit: cover;
       border-radius: 50%;
       border: 5px solid #ff80ab;
+      background: #fff;
       cursor: pointer;
       transition: transform 0.3s ease, opacity 0.4s;
-      background-color: #fff;
     }
-    img.avatar:hover { transform: scale(1.05); }
+
+    img.avatar:hover {
+      transform: scale(1.05);
+    }
+
     .text-container {
       flex: 2;
       text-align: left;
       padding-left: 40px;
       margin-top: 80px;
     }
+
     h1 {
       color: #ffccff;
       font-size: 32px;
       margin: 0;
     }
+
     p {
       font-size: 20px;
-      color: #eeeeee;
       margin: 10px 0 0 0;
     }
-    #logoutBtn {
-      position: absolute;
-      top: 10px;
-      left: 20px;
-      background: rgba(255, 255, 255, 0.2);
-      color: #fff;
-      font-size: 16px;
-      border: none;
-      border-radius: 8px;
-      padding: 6px 12px;
-      cursor: pointer;
-      backdrop-filter: blur(5px);
-      z-index: 3;
-      display: none;
-    }
-    #passwordOverlay {
+
+    #passwordScreen {
       position: fixed;
       top: 0; left: 0;
       width: 100%; height: 100%;
-      background: rgba(0, 0, 0, 0.8);
-      color: white;
+      background: rgba(0, 0, 0, 0.9);
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      z-index: 9999;
+      z-index: 10;
     }
-    #passwordOverlay input {
+
+    #passwordScreen input {
       padding: 10px;
       font-size: 18px;
       margin-top: 10px;
-      border-radius: 5px;
+      border-radius: 8px;
       border: none;
     }
-    #passwordOverlay button {
+
+    #passwordScreen button {
       margin-top: 10px;
-      padding: 10px 20px;
+      padding: 8px 20px;
       font-size: 16px;
-      background: #ff80ab;
+      border-radius: 8px;
       border: none;
-      border-radius: 5px;
       cursor: pointer;
+    }
+
+    #logoutButton {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      background: rgba(255,255,255,0.2);
+      border: none;
+      color: #fff;
+      padding: 6px 12px;
+      font-size: 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      z-index: 9;
+      backdrop-filter: blur(5px);
+    }
+
+    #logoutButton:hover {
+      background: rgba(255,255,255,0.4);
     }
   </style>
 </head>
 <body>
-  <div id="passwordOverlay">
-    <p>Để tiếp tục xem ảnh Bé Miu, vui lòng nhập mật khẩu vào ô sau :</p>
-    <input type="password" id="passwordInput" placeholder="Mật khẩu">
-    <button onclick="checkPassword()">Vào xem</button>
+
+<!-- Giao diện nhập mật khẩu -->
+<div id="passwordScreen">
+  <p>Để tiếp tục xem ảnh Bé Miu, vui lòng nhập mật khẩu vào ô sau:</p>
+  <input type="password" id="passwordInput" placeholder="Nhập mật khẩu...">
+  <button onclick="checkPassword()">Xác nhận</button>
+</div>
+
+<!-- Nút đăng xuất -->
+<button id="logoutButton" onclick="logout()" style="display: none;">Đăng xuất</button>
+
+<!-- Phần nội dung chính -->
+<div class="background-image" id="bgContainer">
+  <img id="bgImage" src="4.JPG" alt="Ảnh nền">
+</div>
+
+<div class="container">
+  <div class="avatar-container">
+    <img id="avatar" class="avatar" src="9.JPG" alt="Ảnh Miu" onclick="doiAnhMiu()">
   </div>
-
-  <button id="logoutBtn" onclick="logout()">Đăng xuất</button>
-
-  <div class="background-image" id="bgContainer">
-    <img id="bgImage" src="4.JPG" alt="Ảnh nền">
-    <div class="controls">
-      <button onclick="zoomIn()">+</button>
-      <button onclick="zoomOut()">−</button>
-      <button onclick="resetImage()">⟲</button>
-    </div>
+  <div class="text-container">
+    <h1>Bé Miu đáng iu</h1>
+    <p>Chào mừng bạn đến với thế giới dễ thương của bé Miu!</p>
   </div>
+</div>
 
-  <div class="container">
-    <div class="avatar-container">
-      <img id="avatar" class="avatar" src="9.JPG" alt="Ảnh Miu" onclick="doiAnhMiu()">
-    </div>
-    <div class="text-container">
-      <h1>Bé Miu đáng iu</h1>
-      <p>Chào mừng bạn đến với thế giới dễ thương của bé Miu!</p>
-    </div>
-  </div>
+<!-- Âm thanh mèo -->
+<audio id="meowSound" src="meow.mp3" preload="auto"></audio>
 
-  <audio id="meowSound" src="meow.mp3" preload="auto"></audio>
+<script>
+  const CORRECT_PASSWORD = "04122023";
+  const avatar = document.getElementById('avatar');
+  const sound = document.getElementById('meowSound');
 
-  <script>
-    const avatars = ["1.JPG", "2.JPG", "3.JPG", "4.JPG", "5.JPG", "6.JPG", "7.JPG", "8.JPG", "9.JPG"];
-    const avatar = document.getElementById('avatar');
-    const sound = document.getElementById('meowSound');
-    const bgImage = document.getElementById('bgImage');
-    const bgContainer = document.getElementById('bgContainer');
+  const avatars = ["1.JPG", "2.JPG", "3.JPG", "4.JPG", "5.JPG", "6.JPG", "7.JPG", "8.JPG", "9.JPG"];
+  let avatarIndex = 0;
 
-    let avatarIndex = 0;
-    let currentX = 0;
-    let scale = 1;
-    let isDragging = false;
-    let startX;
+  function doiAnhMiu() {
+    avatar.style.opacity = 0;
+    setTimeout(() => {
+      avatarIndex = (avatarIndex + 1) % avatars.length;
+      avatar.src = avatars[avatarIndex];
+      localStorage.setItem("selectedAvatar", avatars[avatarIndex]);
+      avatar.style.opacity = 1;
+      sound.currentTime = 0;
+      sound.play();
+    }, 400);
+  }
 
-    function doiAnhMiu() {
-      avatar.style.opacity = 0;
-      setTimeout(() => {
-        avatarIndex = (avatarIndex + 1) % avatars.length;
-        const newAvatar = avatars[avatarIndex];
-        avatar.src = newAvatar;
-        localStorage.setItem('selectedAvatar', newAvatar);
-        avatar.style.opacity = 1;
-        sound.currentTime = 0;
-        sound.play();
-      }, 400);
+  // Kiểm tra mật khẩu khi tải trang
+  window.onload = () => {
+    const saved = localStorage.getItem('accessGranted');
+    const savedAvatar = localStorage.getItem('selectedAvatar');
+    if (saved === "true") {
+      document.getElementById('passwordScreen').style.display = "none";
+      document.getElementById('logoutButton').style.display = "block";
     }
 
-    function zoomIn() {
-      scale += 0.1;
-      updateZoom();
+    if (savedAvatar && avatars.includes(savedAvatar)) {
+      avatar.src = savedAvatar;
+      avatarIndex = avatars.indexOf(savedAvatar);
     }
+  };
 
-    function zoomOut() {
-      scale = Math.max(0.5, scale - 0.1);
-      updateZoom();
+  function checkPassword() {
+    const input = document.getElementById('passwordInput').value.trim();
+    if (input === CORRECT_PASSWORD) {
+      document.getElementById('passwordScreen').style.display = "none";
+      document.getElementById('logoutButton').style.display = "block";
+      localStorage.setItem('accessGranted', "true");
+    } else {
+      alert("Sai mật khẩu!");
     }
+  }
 
-    function resetImage() {
-      scale = 1;
-      currentX = 0;
-      bgImage.style.left = '0px';
-      updateZoom();
-      saveBackgroundState();
-    }
+  function logout() {
+    localStorage.removeItem('accessGranted');
+    location.reload();
+  }
+</script>
 
-    function updateZoom() {
-      bgImage.style.transform = `scale(${scale})`;
-      saveBackgroundState();
-    }
-
-    function saveBackgroundState() {
-      const state = {
-        left: bgImage.style.left,
-        scale: scale,
-        src: bgImage.src
-      };
-      localStorage.setItem('bgState', JSON.stringify(state));
-    }
-
-    function checkPassword() {
-      const correct = '123456';
-      const input = document.getElementById('passwordInput').value;
-      if (input === correct) {
-        localStorage.setItem('authenticated', 'true');
-        document.getElementById('passwordOverlay').style.display = 'none';
-        document.getElementById('logoutBtn').style.display = 'block';
-      } else {
-        alert('Sai mật khẩu rồi!');
-      }
-    }
-
-    function logout() {
-      localStorage.removeItem('authenticated');
-      document.getElementById('passwordOverlay').style.display = 'flex';
-      document.getElementById('logoutBtn').style.display = 'none';
-    }
-
-    window.addEventListener('load', () => {
-      if (localStorage.getItem('authenticated') === 'true') {
-        document.getElementById('passwordOverlay').style.display = 'none';
-        document.getElementById('logoutBtn').style.display = 'block';
-      }
-
-      const savedAvatar = localStorage.getItem('selectedAvatar');
-      if (savedAvatar && avatars.includes(savedAvatar)) {
-        avatar.src = savedAvatar;
-        avatarIndex = avatars.indexOf(savedAvatar);
-      }
-
-      const saved = JSON.parse(localStorage.getItem('bgState'));
-      if (saved) {
-        currentX = parseInt(saved.left) || 0;
-        scale = saved.scale || 1;
-        bgImage.src = saved.src || '4.JPG';
-        bgImage.style.left = currentX + 'px';
-        updateZoom();
-      }
-    });
-
-    bgContainer.addEventListener('mousedown', e => {
-      isDragging = true;
-      startX = e.clientX - currentX;
-    });
-    document.addEventListener('mouseup', () => isDragging = false);
-    document.addEventListener('mousemove', e => {
-      if (!isDragging) return;
-      currentX = e.clientX - startX;
-      bgImage.style.left = currentX + 'px';
-      saveBackgroundState();
-    });
-
-    bgContainer.addEventListener('touchstart', e => {
-      isDragging = true;
-      startX = e.touches[0].clientX - currentX;
-    });
-    document.addEventListener('touchend', () => isDragging = false);
-    document.addEventListener('touchmove', e => {
-      if (!isDragging) return;
-      currentX = e.touches[0].clientX - startX;
-      bgImage.style.left = currentX + 'px';
-      saveBackgroundState();
-    });
-  </script>
 </body>
 </html>
