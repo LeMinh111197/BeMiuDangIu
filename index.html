@@ -40,7 +40,7 @@
       user-drag: none;
       user-select: none;
       transition: transform 0.2s ease;
-      pointer-events: none; /* Fix nút bị chặn click */
+      pointer-events: none;
     }
 
     .controls {
@@ -74,8 +74,7 @@
       display: flex;
       align-items: flex-start;
       justify-content: flex-start;
-      flex-wrap: wrap;
-      margin-top: 60px; /* đẩy nội dung xuống dưới nền */
+      margin-top: 60px;
       z-index: 2;
     }
 
@@ -104,7 +103,7 @@
     .text-container {
       flex: 2;
       text-align: left;
-      padding-left: 10px; /* gần avatar hơn */
+      padding-left: 20px;
     }
 
     h1 {
@@ -118,63 +117,11 @@
       color: #eeeeee;
       margin: 10px 0 0 0;
     }
-
-    .thumbnails {
-      display: none;
-      justify-content: center;
-      flex-wrap: wrap;
-      padding: 10px;
-      background: rgba(255, 255, 255, 0.05);
-      border-top: 2px solid #ffccff;
-      margin-top: 20px;
-      transition: all 0.3s ease;
-    }
-
-    .thumbnails img {
-      width: 100px;
-      height: 60px;
-      object-fit: cover;
-      margin: 5px;
-      border-radius: 8px;
-      border: 2px solid transparent;
-      cursor: pointer;
-      transition: transform 0.2s, border-color 0.2s;
-    }
-
-    .thumbnails img:hover {
-      transform: scale(1.05);
-      border-color: #ff80ab;
-    }
-
-    .thumbnails img.selected {
-      border-color: #ffccff;
-    }
-
-    .thumbnail-toggle {
-      position: absolute;
-      bottom: 10px;
-      right: 20px;
-      background: rgba(255, 255, 255, 0.2);
-      border: none;
-      color: #fff;
-      font-size: 18px;
-      border-radius: 50%;
-      width: 36px;
-      height: 36px;
-      cursor: pointer;
-      opacity: 0.6;
-      backdrop-filter: blur(5px);
-      z-index: 9999; /* cao nhất */
-    }
-
-    .thumbnail-toggle:hover {
-      opacity: 1;
-    }
   </style>
 </head>
 <body>
 
-  <!-- Ảnh nền cố định -->
+  <!-- Ảnh nền -->
   <div class="background-image" id="bgContainer">
     <img id="bgImage" src="4.JPG" alt="Ảnh nền">
     <div class="controls">
@@ -182,7 +129,6 @@
       <button onclick="zoomOut()">−</button>
       <button onclick="resetImage()">⟲</button>
     </div>
-    <button class="thumbnail-toggle" onclick="toggleThumbnails()">📷</button>
   </div>
 
   <!-- Nội dung -->
@@ -196,16 +142,7 @@
     </div>
   </div>
 
-  <!-- Danh sách ảnh nền -->
-  <div class="thumbnails" id="thumbnailList">
-    <img src="1.JPG" onclick="changeBackground(this)">
-    <img src="2.JPG" onclick="changeBackground(this)">
-    <img src="3.JPG" onclick="changeBackground(this)">
-    <img src="4.JPG" onclick="changeBackground(this)">
-    <img src="5.JPG" onclick="changeBackground(this)">
-  </div>
-
-  <!-- Âm thanh mèo -->
+  <!-- Âm thanh -->
   <audio id="meowSound" src="meow.mp3" preload="auto"></audio>
 
   <script>
@@ -213,7 +150,6 @@
     const avatar = document.getElementById('avatar');
     const sound = document.getElementById('meowSound');
     const bgImage = document.getElementById('bgImage');
-    const thumbnailList = document.getElementById('thumbnailList');
 
     let avatarIndex = 0;
     let currentX = 0;
@@ -279,20 +215,6 @@
       saveBackgroundState();
     }
 
-    function changeBackground(imgElement) {
-      const thumbs = document.querySelectorAll('.thumbnails img');
-      thumbs.forEach(t => t.classList.remove('selected'));
-      imgElement.classList.add('selected');
-
-      bgImage.src = imgElement.src;
-      saveBackgroundState();
-      thumbnailList.style.display = 'none';
-    }
-
-    function toggleThumbnails() {
-      thumbnailList.style.display = thumbnailList.style.display === 'flex' ? 'none' : 'flex';
-    }
-
     function saveBackgroundState() {
       const state = {
         left: bgImage.style.left,
@@ -310,11 +232,6 @@
         bgImage.src = saved.src || '4.JPG';
         bgImage.style.left = currentX + 'px';
         updateZoom();
-
-        const thumbs = document.querySelectorAll('.thumbnails img');
-        thumbs.forEach(t => {
-          if (t.src === bgImage.src) t.classList.add('selected');
-        });
       }
     });
 
