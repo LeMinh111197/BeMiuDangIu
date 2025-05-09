@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <title>Bé Miu đáng iu</title>
   <style>
-     * { box-sizing: border-box; }
-    
+    * { box-sizing: border-box; }
+
     body {
       margin: 0;
       font-family: 'Arial', sans-serif;
@@ -34,6 +34,7 @@
       cursor: pointer;
       font-size: 14px;
       transition: background 0.3s;
+      display: none;
     }
 
     #logoutBtn:hover {
@@ -215,15 +216,10 @@
 </head>
 <body>
 
-  <div style="position: fixed; top: 10px; right: 10px; z-index: 10000; display: none;" id="logoutWrapper">
   <button id="logoutBtn" onclick="logout()">Đăng xuất</button>
-  <label style="font-size: 13px; color: white; margin-left: 6px;">
-    <input type="checkbox" id="clearAll"> Xóa ảnh & vị trí?
-  </label>
-</div>
 
   <div id="passwordOverlay">
-    <h2>Để tiếp tục xem ảnh Bé Miu, vui lòng nhập ngày tháng năm sinh bé vào ô sau :</h2>
+    <h2>Để tiếp tục xem ảnh Bé Miu, vui lòng nhập mật khẩu vào ô sau :</h2>
     <input type="password" id="passwordInput" placeholder="Nhập mật khẩu...">
     <button onclick="checkPassword()">Xác nhận</button>
   </div>
@@ -258,31 +254,24 @@
   <audio id="meowSound" src="meow.mp3" preload="auto"></audio>
 
   <script>
-    const correctPassword = '04122023';
+    const correctPassword = 'miu123';
 
     function checkPassword() {
       const input = document.getElementById('passwordInput').value;
       if (input === correctPassword) {
-        localStorage.setItem('isLoggedIn', 'true');
         document.getElementById('passwordOverlay').style.display = 'none';
-       document.getElementById('logoutWrapper').style.display = 'flex';
-        saveBackgroundState();
-        saveAvatarState();
+        document.getElementById('logoutBtn').style.display = 'block';
       } else {
         alert('Sai mật khẩu!');
       }
     }
 
-function logout() {
-  if (confirm('Bạn có chắc muốn đăng xuất không?')) {
-    localStorage.removeItem('isLoggedIn');
-    if (document.getElementById('clearAll').checked) {
-      localStorage.removeItem('bgState');
-      localStorage.removeItem('selectedAvatar');
+    function logout() {
+      if (confirm('Bạn có chắc muốn đăng xuất không?')) {
+        localStorage.clear();
+        location.reload();
+      }
     }
-    location.reload();
-  }
-}
 
     const avatars = ["1.JPG", "2.JPG", "3.JPG", "4.JPG", "5.JPG", "6.JPG", "7.JPG", "8.JPG", "9.JPG"];
     const avatar = document.getElementById('avatar');
@@ -297,16 +286,10 @@ function logout() {
     let isDragging = false;
     let startX;
 
-    function saveAvatarState() {
-      localStorage.setItem('selectedAvatar', avatar.src);
-    }
-
-    function loadAvatarState() {
-      const savedAvatar = localStorage.getItem('selectedAvatar');
-      if (savedAvatar && avatars.includes(savedAvatar.split('/').pop())) {
-        avatar.src = savedAvatar;
-        avatarIndex = avatars.indexOf(savedAvatar.split('/').pop());
-      }
+    const savedAvatar = localStorage.getItem('selectedAvatar');
+    if (savedAvatar && avatars.includes(savedAvatar)) {
+      avatar.src = savedAvatar;
+      avatarIndex = avatars.indexOf(savedAvatar);
     }
 
     function doiAnhMiu() {
@@ -315,7 +298,7 @@ function logout() {
         avatarIndex = (avatarIndex + 1) % avatars.length;
         const newAvatar = avatars[avatarIndex];
         avatar.src = newAvatar;
-        saveAvatarState();
+        localStorage.setItem('selectedAvatar', newAvatar);
         avatar.style.opacity = 1;
         sound.currentTime = 0;
         sound.play();
@@ -381,27 +364,18 @@ function logout() {
     }
 
     window.addEventListener('load', () => {
-      if (localStorage.getItem('isLoggedIn') === 'true') {
-        document.getElementById('passwordOverlay').style.display = 'none';
-        document.getElementById('logoutWrapper').style.display = 'flex';
+      const saved = JSON.parse(localStorage.getItem('bgState'));
+      if (saved) {
+        currentX = parseInt(saved.left) || 0;
+        scale = saved.scale || 1;
+        bgImage.src = saved.src || '4.JPG';
+        bgImage.style.left = currentX + 'px';
+        updateZoom();
 
-        const saved = JSON.parse(localStorage.getItem('bgState'));
-        if (saved) {
-          currentX = parseInt(saved.left) || 0;
-          scale = saved.scale || 1;
-          bgImage.src = saved.src || '4.JPG';
-          bgImage.style.left = currentX + 'px';
-          updateZoom();
-
-          const thumbs = document.querySelectorAll('.thumbnails img');
-          thumbs.forEach(t => {
-            if (t.src.split('/').pop() === bgImage.src.split('/').pop()) {
-              t.classList.add('selected');
-            }
-          });
-        }
-
-        loadAvatarState();
+        const thumbs = document.querySelectorAll('.thumbnails img');
+        thumbs.forEach(t => {
+          if (t.src === bgImage.src) t.classList.add('selected');
+        });
       }
     });
 
