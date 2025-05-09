@@ -56,18 +56,22 @@
     }
 
     .controls button {
-      padding: 8px 12px;
-      font-size: 14px;
+      width: 42px;
+      height: 42px;
+      font-size: 22px;
+      font-weight: bold;
       border: none;
-      border-radius: 5px;
-      background-color: #ff80ab;
+      border-radius: 50%;
+      background-color: #ff4081;
       color: white;
       cursor: pointer;
-      transition: background 0.2s;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+      transition: background 0.2s, transform 0.2s;
     }
 
     .controls button:hover {
-      background-color: #ff4f87;
+      background-color: #f50057;
+      transform: scale(1.1);
     }
 
     .container {
@@ -117,26 +121,56 @@
       color: #eeeeee;
       margin: 10px 0 0 0;
     }
+
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: rgba(255, 105, 180, 0.9);
+      color: white;
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-size: 16px;
+      opacity: 0;
+      transition: opacity 0.5s;
+      z-index: 999;
+    }
+
+    .toast.show {
+      opacity: 1;
+    }
+
+    .clear-button {
+      margin-top: 8px;
+      font-size: 12px;
+      background: #ff80ab;
+      border: none;
+      padding: 4px 6px;
+      border-radius: 6px;
+      color: white;
+      cursor: pointer;
+    }
+
+    .clear-button:hover {
+      background-color: #ff4f87;
+    }
   </style>
 </head>
 <body>
 
-  <!-- Ảnh nền có thể di chuyển và zoom -->
   <div class="background-wrapper">
     <div class="background-image" id="bgContainer">
       <img id="bgImage" src="4.JPG" alt="Ảnh nền">
     </div>
 
-    <!-- Nút điều khiển bên phải -->
     <div class="controls">
-      <button onclick="zoomIn()">Phóng to</button>
-      <button onclick="zoomOut()">Thu nhỏ</button>
-      <button onclick="resetTransform()">Đặt lại</button>
-      <button onclick="savePosition()">💾 Lưu vị trí</button>
+      <button onclick="zoomIn()">+</button>
+      <button onclick="zoomOut()">−</button>
+      <button onclick="resetTransform()">⟳</button>
+      <button class="clear-button" onclick="clearStorage()">Xóa</button>
     </div>
   </div>
 
-  <!-- Nội dung -->
   <div class="container">
     <div class="avatar-container">
       <img id="avatar" class="avatar" src="9.JPG" alt="Ảnh Miu" onclick="doiAnhMiu()">
@@ -147,17 +181,17 @@
     </div>
   </div>
 
+  <div class="toast" id="toast">Đã lưu vị trí ảnh</div>
+
   <audio id="meowSound" src="meow.mp3" preload="auto"></audio>
 
   <script>
-    // Avatar logic
     const avatars = ["1.JPG", "2.JPG", "3.JPG", "4.JPG", "5.JPG", "6.JPG", "7.JPG", "8.JPG", "9.JPG"];
     let avatarIndex = 0;
 
     function doiAnhMiu() {
       const avatar = document.getElementById('avatar');
       const sound = document.getElementById('meowSound');
-
       avatar.style.opacity = 0;
       setTimeout(() => {
         avatarIndex = (avatarIndex + 1) % avatars.length;
@@ -168,7 +202,6 @@
       }, 400);
     }
 
-    // Zoom & move logic
     const bgImage = document.getElementById('bgImage');
     const bgContainer = document.getElementById('bgContainer');
     let isDragging = false;
@@ -178,6 +211,7 @@
 
     function updateTransform() {
       bgImage.style.transform = `translate(${currentX}px, ${currentY}px) scale(${scale})`;
+      autoSave();
     }
 
     function zoomIn() {
@@ -186,8 +220,7 @@
     }
 
     function zoomOut() {
-      scale -= 0.1;
-      if (scale < 0.3) scale = 0.3;
+      scale = Math.max(0.3, scale - 0.1);
       updateTransform();
     }
 
@@ -198,14 +231,15 @@
       updateTransform();
     }
 
-    function savePosition() {
-      const positionData = {
-        x: currentX,
-        y: currentY,
-        scale: scale
-      };
+    function autoSave() {
+      const positionData = { x: currentX, y: currentY, scale: scale };
       localStorage.setItem('bgPosition', JSON.stringify(positionData));
-      alert("Đã lưu vị trí ảnh nền!");
+      showToast("Đã lưu vị trí ảnh");
+    }
+
+    function clearStorage() {
+      localStorage.removeItem('bgPosition');
+      showToast("Đã xóa bộ nhớ đã lưu");
     }
 
     function loadSavedPosition() {
@@ -223,7 +257,15 @@
       }
     }
 
-    // Kéo chuột
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      toast.innerText = message;
+      toast.classList.add('show');
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 2000);
+    }
+
     bgContainer.addEventListener('mousedown', function(e) {
       isDragging = true;
       startX = e.clientX - currentX;
@@ -231,7 +273,11 @@
       bgImage.style.cursor = 'grabbing';
     });
 
-    document.addEventListener('mouseup', () => isDragging = false);
+    document.addEventListener('mouseup', () => {
+      isDragging = false;
+      bgImage.style.cursor = 'grab';
+    });
+
     document.addEventListener('mousemove', function(e) {
       if (!isDragging) return;
       currentX = e.clientX - startX;
@@ -239,7 +285,6 @@
       updateTransform();
     });
 
-    // Cuộn để zoom
     bgContainer.addEventListener('wheel', function(e) {
       e.preventDefault();
       const zoomAmount = 0.05;
@@ -248,7 +293,6 @@
       updateTransform();
     });
 
-    // Kéo cảm ứng
     bgContainer.addEventListener('touchstart', function(e) {
       isDragging = true;
       startX = e.touches[0].clientX - currentX;
@@ -256,6 +300,7 @@
     });
 
     document.addEventListener('touchend', () => isDragging = false);
+
     document.addEventListener('touchmove', function(e) {
       if (!isDragging) return;
       currentX = e.touches[0].clientX - startX;
@@ -263,7 +308,6 @@
       updateTransform();
     });
 
-    // Tải lại vị trí khi mở trang
     window.onload = loadSavedPosition;
   </script>
 
