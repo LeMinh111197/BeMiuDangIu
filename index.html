@@ -12,7 +12,7 @@
       margin: 0;
       font-family: Arial, sans-serif;
       color: #fff;
-      background-image: url('galaxy.jpg'); /* Nền dải ngân hà */
+      background-image: url('galaxy.jpg');
       background-size: cover;
       background-repeat: repeat;
       animation: moveGalaxy 60s linear infinite;
@@ -25,36 +25,32 @@
 
     .background-image {
       width: 100%;
-      max-height: 600px;
+      height: 400px;
       overflow: hidden;
       position: relative;
       border-bottom: 3px solid #ffccff;
     }
 
     .background-image img {
-      position: absolute;
-      top: 0;
-      left: 0;
       width: 100%;
       height: auto;
+      display: block;
       user-drag: none;
       user-select: none;
     }
 
     .container {
       position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-wrap: wrap;
-      margin-top: -100px; /* Đẩy container lên đè ảnh nền */
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
     }
 
     .avatar-container {
-      flex: 1;
-      display: flex;
-      justify-content: flex-start;
-      padding-left: 40px;
+      position: absolute;
+      bottom: -100px;
+      left: 40px;
+      z-index: 2;
     }
 
     img.avatar {
@@ -64,9 +60,8 @@
       border-radius: 50%;
       border: 5px solid #ff80ab;
       cursor: pointer;
-      transition: transform 0.3s ease;
       background-color: #fff;
-      z-index: 2;
+      transition: opacity 0.4s ease, transform 0.3s ease;
     }
 
     img.avatar:hover {
@@ -74,9 +69,10 @@
     }
 
     .text-container {
-      flex: 2;
-      text-align: left;
-      padding-left: 40px;
+      position: absolute;
+      bottom: -70px;
+      left: 260px;
+      z-index: 1;
     }
 
     h1 {
@@ -96,7 +92,7 @@
 
   <!-- Ảnh nền cố định -->
   <div class="background-image">
-    <img src="3.JPG" alt="Ảnh nền">
+    <img src="4.JPG" alt="Ảnh nền">
   </div>
 
   <!-- Phần nội dung đè lên ảnh nền -->
@@ -121,10 +117,14 @@
       const avatar = document.getElementById('avatar');
       const sound = document.getElementById('meowSound');
 
-      avatarIndex = (avatarIndex + 1) % avatars.length;
-      avatar.src = avatars[avatarIndex];
-      sound.currentTime = 0;
-      sound.play();
+      avatar.style.opacity = 0;
+      setTimeout(() => {
+        avatarIndex = (avatarIndex + 1) % avatars.length;
+        avatar.src = avatars[avatarIndex];
+        avatar.style.opacity = 1;
+        sound.currentTime = 0;
+        sound.play();
+      }, 400);
     }
   </script>
 
