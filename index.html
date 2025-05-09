@@ -4,7 +4,9 @@
   <meta charset="UTF-8">
   <title>Bé Miu đáng iu</title>
   <style>
-    * { box-sizing: border-box; }
+    /* (Giữ nguyên phần CSS như bạn đã viết, không thay đổi) */
+    /* ... */
+	* { box-sizing: border-box; }
 
     body {
       margin: 0;
@@ -257,41 +259,43 @@
     const correctPassword = '04122023';
 
     function checkPassword() {
-  const input = document.getElementById('passwordInput').value;
-  if (input === correctPassword) {
-    document.getElementById('passwordOverlay').style.display = 'none';
-    document.getElementById('logoutBtn').style.display = 'block';
+      const input = document.getElementById('passwordInput').value;
+      if (input === correctPassword) {
+        localStorage.setItem('loggedIn', 'true'); // Ghi trạng thái đã đăng nhập
+        document.getElementById('passwordOverlay').style.display = 'none';
+        document.getElementById('logoutBtn').style.display = 'block';
 
-    const saved = JSON.parse(localStorage.getItem('appState'));
-    if (saved) {
-      // Phục hồi ảnh nền
-      if (saved.bgState) {
-        currentX = parseInt(saved.bgState.left) || 0;
-        scale = saved.bgState.scale || 1;
-        bgImage.src = saved.bgState.src || '4.JPG';
-        bgImage.style.left = currentX + 'px';
-        updateZoom();
+        const saved = JSON.parse(localStorage.getItem('appState'));
+        if (saved) {
+          // Phục hồi ảnh nền
+          if (saved.bgState) {
+            currentX = parseInt(saved.bgState.left) || 0;
+            scale = saved.bgState.scale || 1;
+            bgImage.src = saved.bgState.src || '4.JPG';
+            bgImage.style.left = currentX + 'px';
+            updateZoom();
 
-        const thumbs = document.querySelectorAll('.thumbnails img');
-        thumbs.forEach(t => {
-          t.classList.remove('selected');
-          if (t.src === bgImage.src) t.classList.add('selected');
-        });
+            const thumbs = document.querySelectorAll('.thumbnails img');
+            thumbs.forEach(t => {
+              t.classList.remove('selected');
+              if (t.src === bgImage.src) t.classList.add('selected');
+            });
+          }
+
+          // Phục hồi avatar
+          if (saved.avatar && avatars.includes(saved.avatar.split('/').pop())) {
+            avatar.src = saved.avatar;
+            avatarIndex = avatars.indexOf(saved.avatar.split('/').pop());
+          }
+
+          // Phục hồi trạng thái thumbnail
+          thumbnailList.style.display = saved.thumbnailsVisible ? 'flex' : 'none';
+        }
+      } else {
+        alert('Sai mật khẩu!');
       }
-
-      // Phục hồi avatar
-      if (saved.avatar && avatars.includes(saved.avatar.split('/').pop())) {
-        avatar.src = saved.avatar;
-        avatarIndex = avatars.indexOf(saved.avatar.split('/').pop());
-      }
-
-      // Phục hồi trạng thái thumbnail (ẩn/hiện)
-      thumbnailList.style.display = saved.thumbnailsVisible ? 'flex' : 'none';
     }
-  } else {
-    alert('Sai mật khẩu!');
-  }
-}
+
     function logout() {
       if (confirm('Bạn có chắc muốn đăng xuất không?')) {
         localStorage.clear();
@@ -364,20 +368,20 @@
 
     function updateZoom() {
       bgImage.style.transform = `scale(${scale})`;
-     saveAppState();
+      saveAppState();
     }
 
-     function saveAppState() {
-     const bgState = {
-      left: bgImage.style.left,
-      scale: scale,
-      src: bgImage.src
-    };
+    function saveAppState() {
+      const bgState = {
+        left: bgImage.style.left,
+        scale: scale,
+        src: bgImage.src
+      };
       const appState = {
-      bgState: bgState,
-      avatar: avatar.src,
-      thumbnailsVisible: thumbnailList.style.display === 'flex'
-    };
+        bgState: bgState,
+        avatar: avatar.src,
+        thumbnailsVisible: thumbnailList.style.display === 'flex'
+      };
       localStorage.setItem('appState', JSON.stringify(appState));
     }
 
@@ -394,31 +398,6 @@
       thumbnailList.style.display = thumbnailList.style.display === 'flex' ? 'none' : 'flex';
     });
 
-    function saveBackgroundState() {
-      const state = {
-        left: bgImage.style.left,
-        scale: scale,
-        src: bgImage.src
-      };
-      localStorage.setItem('bgState', JSON.stringify(state));
-    }
-
-    window.addEventListener('load', () => {
-      const saved = JSON.parse(localStorage.getItem('bgState'));
-      if (saved) {
-        currentX = parseInt(saved.left) || 0;
-        scale = saved.scale || 1;
-        bgImage.src = saved.src || '4.JPG';
-        bgImage.style.left = currentX + 'px';
-        updateZoom();
-
-        const thumbs = document.querySelectorAll('.thumbnails img');
-        thumbs.forEach(t => {
-          if (t.src === bgImage.src) t.classList.add('selected');
-        });
-      }
-    });
-
     // Touch support
     bgContainer.addEventListener('touchstart', e => {
       isDragging = true;
@@ -432,6 +411,37 @@
       currentX = e.touches[0].clientX - startX;
       bgImage.style.left = currentX + 'px';
       saveAppState();
+    });
+
+    window.addEventListener('load', () => {
+      if (localStorage.getItem('loggedIn') === 'true') {
+        document.getElementById('passwordOverlay').style.display = 'none';
+        document.getElementById('logoutBtn').style.display = 'block';
+
+        const saved = JSON.parse(localStorage.getItem('appState'));
+        if (saved) {
+          if (saved.bgState) {
+            currentX = parseInt(saved.bgState.left) || 0;
+            scale = saved.bgState.scale || 1;
+            bgImage.src = saved.bgState.src || '4.JPG';
+            bgImage.style.left = currentX + 'px';
+            updateZoom();
+
+            const thumbs = document.querySelectorAll('.thumbnails img');
+            thumbs.forEach(t => {
+              t.classList.remove('selected');
+              if (t.src === bgImage.src) t.classList.add('selected');
+            });
+          }
+
+          if (saved.avatar && avatars.includes(saved.avatar.split('/').pop())) {
+            avatar.src = saved.avatar;
+            avatarIndex = avatars.indexOf(saved.avatar.split('/').pop());
+          }
+
+          thumbnailList.style.display = saved.thumbnailsVisible ? 'flex' : 'none';
+        }
+      }
     });
   </script>
 </body>
