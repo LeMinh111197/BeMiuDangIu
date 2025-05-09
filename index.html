@@ -4,12 +4,15 @@
   <meta charset="UTF-8">
   <title>Bé Miu đáng iu</title>
   <style>
+    * { box-sizing: border-box; }
+
     body {
       margin: 0;
-      font-family: Arial, sans-serif;
+      font-family: 'Arial', sans-serif;
       color: #fff;
-      background: #000 url('galaxy.jpg') repeat;
+      background-image: url('galaxy.jpg');
       background-size: cover;
+      background-repeat: repeat;
       animation: moveGalaxy 60s linear infinite;
     }
 
@@ -18,30 +21,104 @@
       100% { background-position: -2000px 0; }
     }
 
+    #passwordOverlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background: rgba(0,0,0,0.9);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+    }
+
+    #passwordOverlay h2 {
+      margin-bottom: 10px;
+      color: #ffccff;
+      font-size: 22px;
+      text-align: center;
+    }
+
+    #passwordInput {
+      padding: 10px;
+      border-radius: 8px;
+      border: none;
+      font-size: 18px;
+      text-align: center;
+      margin-bottom: 10px;
+      outline: none;
+    }
+
+    #passwordOverlay button {
+      padding: 8px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      background-color: #ff80ab;
+      color: white;
+      transition: background 0.3s;
+    }
+
+    #passwordOverlay button:hover {
+      background-color: #ff99bb;
+    }
+
     .background-image {
       width: 100%;
       height: 500px;
-      position: relative;
       overflow: hidden;
+      position: relative;
       border-bottom: 3px solid #ffccff;
     }
 
     .background-image img {
-      width: auto;
-      height: 100%;
       position: absolute;
       top: 0;
       left: 0;
-      transition: transform 0.3s ease;
+      height: 100%;
+      width: auto;
+      user-drag: none;
       user-select: none;
+      transition: transform 0.2s ease;
+      cursor: pointer;
+    }
+
+    .controls {
+      position: absolute;
+      top: 10px;
+      right: 20px;
+      display: flex;
+      gap: 10px;
+      opacity: 0.5;
+      z-index: 2;
+    }
+
+    .controls button {
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      color: #fff;
+      font-size: 20px;
+      border-radius: 8px;
+      padding: 4px 10px;
+      cursor: pointer;
+      backdrop-filter: blur(5px);
+      transition: background 0.3s;
+    }
+
+    .controls button:hover {
+      background: rgba(255, 255, 255, 0.3);
     }
 
     .container {
+      position: relative;
       display: flex;
       align-items: center;
       justify-content: center;
-      margin-top: -100px;
       flex-wrap: wrap;
+      margin-top: -100px;
+      z-index: 2;
     }
 
     .avatar-container {
@@ -57,9 +134,9 @@
       object-fit: cover;
       border-radius: 50%;
       border: 5px solid #ff80ab;
-      background: #fff;
       cursor: pointer;
       transition: transform 0.3s ease, opacity 0.4s;
+      background-color: #fff;
     }
 
     img.avatar:hover {
@@ -69,7 +146,7 @@
     .text-container {
       flex: 2;
       text-align: left;
-      padding-left: 40px;
+      padding-left: 30px;
       margin-top: 80px;
     }
 
@@ -81,139 +158,216 @@
 
     p {
       font-size: 20px;
+      color: #eeeeee;
       margin: 10px 0 0 0;
     }
 
-    #passwordScreen {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0, 0, 0, 0.9);
-      display: flex;
-      flex-direction: column;
+    .thumbnails {
+      display: none;
       justify-content: center;
-      align-items: center;
-      z-index: 10;
-    }
-
-    #passwordScreen input {
+      flex-wrap: wrap;
       padding: 10px;
-      font-size: 18px;
-      margin-top: 10px;
+      background: rgba(255, 255, 255, 0.05);
+      border-top: 2px solid #ffccff;
+      margin-top: 20px;
+      transition: all 0.3s ease;
+    }
+
+    .thumbnails img {
+      width: 100px;
+      height: 60px;
+      object-fit: cover;
+      margin: 5px;
       border-radius: 8px;
-      border: none;
-    }
-
-    #passwordScreen button {
-      margin-top: 10px;
-      padding: 8px 20px;
-      font-size: 16px;
-      border-radius: 8px;
-      border: none;
+      border: 2px solid transparent;
       cursor: pointer;
+      transition: transform 0.2s, border-color 0.2s;
     }
 
-    #logoutButton {
-      position: fixed;
-      top: 10px;
-      left: 10px;
-      background: rgba(255,255,255,0.2);
-      border: none;
-      color: #fff;
-      padding: 6px 12px;
-      font-size: 16px;
-      border-radius: 6px;
-      cursor: pointer;
-      z-index: 9;
-      backdrop-filter: blur(5px);
+    .thumbnails img:hover {
+      transform: scale(1.05);
+      border-color: #ff80ab;
     }
 
-    #logoutButton:hover {
-      background: rgba(255,255,255,0.4);
+    .thumbnails img.selected {
+      border-color: #ffccff;
     }
   </style>
 </head>
 <body>
 
-<!-- Giao diện nhập mật khẩu -->
-<div id="passwordScreen">
-  <p>Để tiếp tục xem ảnh Bé Miu, vui lòng nhập mật khẩu vào ô sau:</p>
-  <input type="password" id="passwordInput" placeholder="Nhập mật khẩu...">
-  <button onclick="checkPassword()">Xác nhận</button>
-</div>
-
-<!-- Nút đăng xuất -->
-<button id="logoutButton" onclick="logout()" style="display: none;">Đăng xuất</button>
-
-<!-- Phần nội dung chính -->
-<div class="background-image" id="bgContainer">
-  <img id="bgImage" src="4.JPG" alt="Ảnh nền">
-</div>
-
-<div class="container">
-  <div class="avatar-container">
-    <img id="avatar" class="avatar" src="9.JPG" alt="Ảnh Miu" onclick="doiAnhMiu()">
+  <!-- Lớp phủ yêu cầu mật khẩu -->
+  <div id="passwordOverlay">
+    <h2>Để tiếp tục xem ảnh Bé Miu, vui lòng nhập mật khẩu vào ô sau :</h2>
+    <input type="password" id="passwordInput" placeholder="Nhập mật khẩu...">
+    <button onclick="checkPassword()">Xác nhận</button>
   </div>
-  <div class="text-container">
-    <h1>Bé Miu đáng iu</h1>
-    <p>Chào mừng bạn đến với thế giới dễ thương của bé Miu!</p>
+
+  <!-- Ảnh nền -->
+  <div class="background-image" id="bgContainer">
+    <img id="bgImage" src="4.JPG" alt="Ảnh nền">
+    <div class="controls">
+      <button onclick="zoomIn()">+</button>
+      <button onclick="zoomOut()">−</button>
+      <button onclick="resetImage()">⟲</button>
+    </div>
   </div>
-</div>
 
-<!-- Âm thanh mèo -->
-<audio id="meowSound" src="meow.mp3" preload="auto"></audio>
+  <!-- Nội dung -->
+  <div class="container">
+    <div class="avatar-container">
+      <img id="avatar" class="avatar" src="9.JPG" alt="Ảnh Miu" onclick="doiAnhMiu()">
+    </div>
+    <div class="text-container">
+      <h1>Bé Miu đáng iu</h1>
+      <p>Chào mừng bạn đến với thế giới dễ thương của bé Miu!</p>
+    </div>
+  </div>
 
-<script>
-  const CORRECT_PASSWORD = "04122023";
-  const avatar = document.getElementById('avatar');
-  const sound = document.getElementById('meowSound');
+  <!-- Danh sách ảnh nền -->
+  <div class="thumbnails" id="thumbnailList">
+    <img src="1.JPG" onclick="changeBackground(this)">
+    <img src="2.JPG" onclick="changeBackground(this)">
+    <img src="3.JPG" onclick="changeBackground(this)">
+    <img src="4.JPG" onclick="changeBackground(this)">
+    <img src="5.JPG" onclick="changeBackground(this)">
+  </div>
 
-  const avatars = ["1.JPG", "2.JPG", "3.JPG", "4.JPG", "5.JPG", "6.JPG", "7.JPG", "8.JPG", "9.JPG"];
-  let avatarIndex = 0;
+  <!-- Âm thanh mèo -->
+  <audio id="meowSound" src="meow.mp3" preload="auto"></audio>
 
-  function doiAnhMiu() {
-    avatar.style.opacity = 0;
-    setTimeout(() => {
-      avatarIndex = (avatarIndex + 1) % avatars.length;
-      avatar.src = avatars[avatarIndex];
-      localStorage.setItem("selectedAvatar", avatars[avatarIndex]);
-      avatar.style.opacity = 1;
-      sound.currentTime = 0;
-      sound.play();
-    }, 400);
-  }
+  <script>
+    const correctPassword = 'miu123';
 
-  // Kiểm tra mật khẩu khi tải trang
-  window.onload = () => {
-    const saved = localStorage.getItem('accessGranted');
-    const savedAvatar = localStorage.getItem('selectedAvatar');
-    if (saved === "true") {
-      document.getElementById('passwordScreen').style.display = "none";
-      document.getElementById('logoutButton').style.display = "block";
+    function checkPassword() {
+      const input = document.getElementById('passwordInput').value;
+      if (input === correctPassword) {
+        document.getElementById('passwordOverlay').style.display = 'none';
+      } else {
+        alert('Sai mật khẩu!');
+      }
     }
 
+    const avatars = ["1.JPG", "2.JPG", "3.JPG", "4.JPG", "5.JPG", "6.JPG", "7.JPG", "8.JPG", "9.JPG"];
+    const avatar = document.getElementById('avatar');
+    const sound = document.getElementById('meowSound');
+    const bgImage = document.getElementById('bgImage');
+    const thumbnailList = document.getElementById('thumbnailList');
+    const bgContainer = document.getElementById('bgContainer');
+
+    let avatarIndex = 0;
+    let currentX = 0;
+    let scale = 1;
+    let isDragging = false;
+    let startX;
+
+    const savedAvatar = localStorage.getItem('selectedAvatar');
     if (savedAvatar && avatars.includes(savedAvatar)) {
       avatar.src = savedAvatar;
       avatarIndex = avatars.indexOf(savedAvatar);
     }
-  };
 
-  function checkPassword() {
-    const input = document.getElementById('passwordInput').value.trim();
-    if (input === CORRECT_PASSWORD) {
-      document.getElementById('passwordScreen').style.display = "none";
-      document.getElementById('logoutButton').style.display = "block";
-      localStorage.setItem('accessGranted', "true");
-    } else {
-      alert("Sai mật khẩu!");
+    function doiAnhMiu() {
+      avatar.style.opacity = 0;
+      setTimeout(() => {
+        avatarIndex = (avatarIndex + 1) % avatars.length;
+        const newAvatar = avatars[avatarIndex];
+        avatar.src = newAvatar;
+        localStorage.setItem('selectedAvatar', newAvatar);
+        avatar.style.opacity = 1;
+        sound.currentTime = 0;
+        sound.play();
+      }, 400);
     }
-  }
 
-  function logout() {
-    localStorage.removeItem('accessGranted');
-    location.reload();
-  }
-</script>
+    bgContainer.addEventListener('mousedown', e => {
+      isDragging = true;
+      startX = e.clientX - currentX;
+    });
 
+    document.addEventListener('mouseup', () => isDragging = false);
+    document.addEventListener('mousemove', e => {
+      if (!isDragging) return;
+      currentX = e.clientX - startX;
+      bgImage.style.left = currentX + 'px';
+      saveBackgroundState();
+    });
+
+    function zoomIn() {
+      scale += 0.1;
+      updateZoom();
+    }
+
+    function zoomOut() {
+      scale = Math.max(0.5, scale - 0.1);
+      updateZoom();
+    }
+
+    function resetImage() {
+      scale = 1;
+      currentX = 0;
+      bgImage.style.left = '0px';
+      updateZoom();
+      saveBackgroundState();
+    }
+
+    function updateZoom() {
+      bgImage.style.transform = `scale(${scale})`;
+      saveBackgroundState();
+    }
+
+    function changeBackground(imgElement) {
+      const thumbs = document.querySelectorAll('.thumbnails img');
+      thumbs.forEach(t => t.classList.remove('selected'));
+      imgElement.classList.add('selected');
+      bgImage.src = imgElement.src;
+      saveBackgroundState();
+      thumbnailList.style.display = 'none';
+    }
+
+    bgImage.addEventListener('click', () => {
+      thumbnailList.style.display = thumbnailList.style.display === 'flex' ? 'none' : 'flex';
+    });
+
+    function saveBackgroundState() {
+      const state = {
+        left: bgImage.style.left,
+        scale: scale,
+        src: bgImage.src
+      };
+      localStorage.setItem('bgState', JSON.stringify(state));
+    }
+
+    window.addEventListener('load', () => {
+      const saved = JSON.parse(localStorage.getItem('bgState'));
+      if (saved) {
+        currentX = parseInt(saved.left) || 0;
+        scale = saved.scale || 1;
+        bgImage.src = saved.src || '4.JPG';
+        bgImage.style.left = currentX + 'px';
+        updateZoom();
+
+        const thumbs = document.querySelectorAll('.thumbnails img');
+        thumbs.forEach(t => {
+          if (t.src === bgImage.src) t.classList.add('selected');
+        });
+      }
+    });
+
+    // Touch support
+    bgContainer.addEventListener('touchstart', e => {
+      isDragging = true;
+      startX = e.touches[0].clientX - currentX;
+    });
+
+    document.addEventListener('touchend', () => isDragging = false);
+
+    document.addEventListener('touchmove', e => {
+      if (!isDragging) return;
+      currentX = e.touches[0].clientX - startX;
+      bgImage.style.left = currentX + 'px';
+      saveBackgroundState();
+    });
+  </script>
 </body>
 </html>
